@@ -254,7 +254,9 @@ public:
   friend Vec3f operator*(const Vec3f &v1, const Vec3f &v2) {
     Vec3f v3; Mult(v3,v1,v2); return v3; }
   
-        
+
+  friend Vec3f operator*(const Matrix &m1, const Vec3f &v);
+  
   // OPERATIONS
   float Dot3(const Vec3f &V) const {
     return data[0] * V.data[0] +

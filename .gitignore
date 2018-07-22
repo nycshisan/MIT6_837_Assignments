@@ -76,3 +76,6 @@ Temporary Items
 
 ### User ###
 *.pdf
+0/ifs
+*.depend
+*.tga

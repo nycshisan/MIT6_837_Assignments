@@ -196,6 +196,23 @@ Matrix operator*(const Matrix& m1, const Matrix& m2) {
   return answer;
 }
 
+Vec3f operator*(const Matrix &m1, const Vec3f &v) {
+  Vec3f answer;
+  for (int y = 0; y < 3; y++) {
+    for (int x = 0; x < 3; x++) {
+      int mx = x, my = y;
+      if (x == 2) {
+        mx = 3;
+      }
+      if (y == 2) {
+        my = 3;
+      }
+      answer.data[y] += v.data[x] * m1.data[my][mx];
+    }
+  }
+  return answer;
+}
+
 Matrix operator*(const Matrix& m, float f) {
   Matrix answer;
   for (int y=0; y<4; y++) {

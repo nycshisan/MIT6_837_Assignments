@@ -15,7 +15,7 @@ void IFS::readFromFile(const std::string &filename) {
 
     // read in the transforms
     for (int i = 0; i < num_transforms; i++) {
-        float probability; 
+        float probability;
         fscanf (input,"%f",&probability);
         Matrix m; 
         m.Read3x3(input);
@@ -30,9 +30,9 @@ void IFS::readFromFile(const std::string &filename) {
 void IFS::renderToImage(Image &img, int nPoint, int nIteration) {
     Vec3f whiteColor(1.f, 1.f, 1.f), blackColor(0.f, 0.f, 0.f);
     img.SetAllPixels(whiteColor);
-
+    srand48(std::random_device()());
     for (int i = 0; i < nPoint; ++i) {
-        double x = drand48(), y = drand48();
+        float x = drand48(), y = drand48();
         Vec3f pVec(x, y, 1);
         for (int j = 0; j < nIteration; ++j) {
             double transChooser = drand48();
@@ -41,6 +41,8 @@ void IFS::renderToImage(Image &img, int nPoint, int nIteration) {
         }
         int px = pVec.x() / pVec.z() * img.Width();
         int py = pVec.y() / pVec.z() * img.Height();
+        if (px < 0 || py < 0 || px >= img.Width() || py >= img.Height())
+            continue;
         img.SetPixel(px, py, blackColor);
     }
 }

@@ -14,6 +14,7 @@ add_executable(A0
         0/ifs.h
         0/main.cpp)
 
-target_include_directories(A0 PUBLIC 0/)
+set_target_properties(A0 PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A0"
+        OUTPUT_NAME "ifs")
 
-set_target_properties(A0 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A0")

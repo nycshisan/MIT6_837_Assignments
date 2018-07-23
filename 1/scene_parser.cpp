@@ -123,7 +123,7 @@ void SceneParser::parseMaterials() {
   int count = 0;
   while (num_materials > count) {
     getToken(token); 
-    if (!strcmp(token, "Material")) {
+    if (!strcmp(token, "PhongMaterial")) {
       materials[count] = parseMaterial();
     } else {
       printf ("Unknown token in parseMaterial: '%s'\n", token); 

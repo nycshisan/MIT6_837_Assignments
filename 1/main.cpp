@@ -6,6 +6,9 @@
 #include <cassert>
 #include <cstdio>
 
+#include "image.h"
+#include "raytracer.h"
+
 int main(int argc, char* argv[]) {
     char *input_file = nullptr;
     int width = 100;
@@ -40,5 +43,12 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    auto img = Image(width, height);
+    RayTracer rayTracer;
+    rayTracer.readSceneFromFile(input_file);
+    rayTracer.renderToImage(img);
+    img.SaveTGA(output_file);
 
+    rayTracer.renderDepthToImage(img, depth_min, depth_max);
+    img.SaveTGA(depth_file);
 }

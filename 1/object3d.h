@@ -9,6 +9,7 @@
 #include "hit.h"
 
 class Object3D {
+protected:
     Material *_m = nullptr;
 
 public:

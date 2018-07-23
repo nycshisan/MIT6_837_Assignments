@@ -6,9 +6,12 @@
 #define ASSIGNMENTS_SPHERE_H
 
 #include "object3d.h"
+#include "hit.h"
 #include "vectors.h"
 
 class Sphere : public Object3D {
+    constexpr static float _err = 1e-4;
+
     Vec3f _center;
     float _radius;
 

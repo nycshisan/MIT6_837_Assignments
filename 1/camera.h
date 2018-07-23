@@ -17,13 +17,16 @@ public:
 };
 
 class OrthographicCamera : public Camera {
+    Vec3f _center, _direction, _up, _horizontal;
+    float _size;
+
 public:
     OrthographicCamera(const Vec3f &center, const Vec3f &direction, const Vec3f &up, float size);
 
     Ray generateRay(Vec2f point) override;
     float getTMin() const override;
 
-    ~OrthographicCamera() override;
+    ~OrthographicCamera() override = default;
 };
 
 #endif //ASSIGNMENTS_CAMERA_H

@@ -18,3 +18,16 @@ set_target_properties(A0 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A0"
         OUTPUT_NAME "ifs")
 
+add_executable(A1
+        1/main.cpp
+        1/matrix.cpp
+        1/image.cpp
+        1/scene_parser.cpp
+        1/sphere.cpp
+        1/raytracer.cpp
+        1/camera.cpp
+        1/group.cpp)
+
+set_target_properties(A1 PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A1"
+        OUTPUT_NAME "raytracer")

@@ -1,0 +1,8 @@
+//
+// Created by Nycshisan on 2018/7/23.
+//
+
+#ifndef ASSIGNMENTS_RAYTRACER_H
+#define ASSIGNMENTS_RAYTRACER_H
+
+#endif //ASSIGNMENTS_RAYTRACER_H

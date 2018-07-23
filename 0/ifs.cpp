@@ -39,9 +39,9 @@ void IFS::renderToImage(Image &img, int nPoint, int nIteration) {
             Matrix &tran = _chooseTrans(transChooser);
             pVec = tran * pVec;
         }
-        x = pVec.x() / pVec.z() * img.Width();
-        y = pVec.y() / pVec.z() * img.Height();
-        img.SetPixel(x, y, blackColor);
+        int px = pVec.x() / pVec.z() * img.Width();
+        int py = pVec.y() / pVec.z() * img.Height();
+        img.SetPixel(px, py, blackColor);
     }
 }
 

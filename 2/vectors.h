@@ -373,7 +373,10 @@ public:
 		     data[1] * data[1] +
 		     data[2] * data[2] +
 		     data[3] * data[3] );
-    return l; }
+    return l;
+  }
+
+  Vec3f xyz() const { return Vec3f(data[0], data[1], data[2]); }
 
   // MODIFIERS
   void Set(float d0, float d1, float d2, float d3) {
@@ -452,6 +455,9 @@ public:
     data[2] /= f;
     data[3] /= f;
     return *this; }
+
+
+    friend Vec4f operator*(const Matrix &m1, const Vec4f &v);
 
   // OPERATIONS
   float Dot2(const Vec4f &V) const {

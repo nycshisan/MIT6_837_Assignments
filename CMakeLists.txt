@@ -42,7 +42,9 @@ add_executable(A2
         2/camera.cpp
         2/group.cpp
         2/plane.cpp
-        2/triangle.cpp 2/triangle.h 2/transform.cpp 2/transform.h)
+        2/triangle.cpp
+        2/transform.cpp
+        2/commandLineArgumentParser.cpp)
 
 set_target_properties(A2 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A2"

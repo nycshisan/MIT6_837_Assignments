@@ -25,8 +25,18 @@ public:
 
     Ray generateRay(Vec2f point) override;
     float getTMin() const override;
-
-    ~OrthographicCamera() override = default;
 };
+
+class PerspectiveCamera : public Camera {
+    Vec3f _center, _direction, _up, _horizontal;
+    float _size;
+
+public:
+    PerspectiveCamera(const Vec3f &center, const Vec3f &direction, const Vec3f &up, float angleRadians);
+
+    Ray generateRay(Vec2f point) override;
+    float getTMin() const override;
+};
+
 
 #endif //ASSIGNMENTS_CAMERA_H

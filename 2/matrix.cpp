@@ -213,6 +213,16 @@ Vec3f operator*(const Matrix &m1, const Vec3f &v) {
   return answer;
 }
 
+Vec4f operator*(const Matrix &m1, const Vec4f &v) {
+  Vec4f answer;
+  for (int y = 0; y < 4; y++) {
+    for (int x = 0; x < 4; x++) {
+      answer.data[y] += v.data[x] * m1.data[y][x];
+    }
+  }
+  return answer;
+}
+
 Matrix operator*(const Matrix& m, float f) {
   Matrix answer;
   for (int y=0; y<4; y++) {

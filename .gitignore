@@ -141,3 +141,5 @@ fabric.properties
 0/ifs
 *.depend
 *.tga
+bin/
+report/

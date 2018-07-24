@@ -5,19 +5,29 @@
 #include "raytracer.h"
 
 #include <cmath>
+#include <vector>
+
+#include "light.h"
 
 void RayTracer::readSceneFromFile(char *input_file) {
     _sceneParser = std::make_shared<SceneParser>(input_file);
 }
 
-void RayTracer::renderToImage(Image &img) {
+void RayTracer::renderToImage(Image &img, bool shade_back) {
     auto bgColor = _sceneParser->getBackgroundColor();
     img.SetAllPixels(bgColor);
 
-    auto *camera = dynamic_cast<OrthographicCamera*>(_sceneParser->getCamera());
+    auto *camera = _sceneParser->getCamera();
     assert(camera != nullptr);
 
     auto group = _sceneParser->getGroup();
+
+    auto nLights = _sceneParser->getNumLights();
+    std::vector<Light*> lights(static_cast<unsigned long>(nLights));
+    for (int i = 0; i < nLights; ++i) {
+        lights[i] = _sceneParser->getLight(i);
+    }
+    auto ambient = _sceneParser->getAmbientLight();
 
     for (int y = 0; y < img.Width(); ++y) {
         for (int x = 0; x < img.Height(); ++x) {
@@ -25,8 +35,19 @@ void RayTracer::renderToImage(Image &img) {
             auto ray = camera->generateRay(p);
             Hit hit;
             if (group->intersect(ray, hit, camera->getTMin())) {
+                auto norm = hit.getNormal();
+                if (shade_back && norm.Dot3(ray.getDirection()) > 0) {
+                    norm.Negate();
+                }
+
                 auto m = hit.getMaterial();
-                auto color = m->getDiffuseColor();
+                auto cObj = m->getDiffuseColor();
+                auto color = ambient * cObj;
+                for (int i = 0; i < nLights; ++i) {
+                    Vec3f intersection = hit.getIntersectionPoint(), lightDir, cLight;
+                    lights[i]->getIllumination(intersection, lightDir, cLight);
+                    color += std::max(0.f, lightDir.Dot3(norm)) * cLight * cObj;
+                }
                 img.SetPixel(x, y, color);
             }
         }
@@ -37,7 +58,7 @@ void RayTracer::renderDepthToImage(Image &img, float depMin, float depMax) {
     auto blackColor = Vec3f(0.f, 0.f, 0.f), whiteColor = Vec3f(1.f, 1.f, 1.f);
     img.SetAllPixels(blackColor);
 
-    auto *camera = dynamic_cast<OrthographicCamera*>(_sceneParser->getCamera());
+    auto *camera = _sceneParser->getCamera();
     assert(camera != nullptr);
 
     auto group = _sceneParser->getGroup();
@@ -54,6 +75,29 @@ void RayTracer::renderDepthToImage(Image &img, float depMin, float depMax) {
                 float weight = (t - depMin) / (depMax - depMin);
                 Vec3f color;
                 Vec3f::WeightedSum(color, blackColor, weight, whiteColor, 1 - weight);
+                img.SetPixel(x, y, color);
+            }
+        }
+    }
+}
+
+void RayTracer::renderNormalToImage(Image &img) {
+    auto blackColor = Vec3f(0.f, 0.f, 0.f);
+    img.SetAllPixels(blackColor);
+
+    auto *camera = _sceneParser->getCamera();
+    assert(camera != nullptr);
+
+    auto group = _sceneParser->getGroup();
+
+    for (int y = 0; y < img.Width(); ++y) {
+        for (int x = 0; x < img.Height(); ++x) {
+            Vec2f p(float(x) / img.Width(), float(y) / img.Height());
+            auto ray = camera->generateRay(p);
+            Hit hit;
+            if (group->intersect(ray, hit, camera->getTMin())) {
+                auto norm = hit.getNormal();
+                Vec3f color = Vec3f(std::fabsf(norm.x()), std::fabsf(norm.y()), std::fabsf(norm.z()));
                 img.SetPixel(x, y, color);
             }
         }

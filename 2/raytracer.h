@@ -19,8 +19,9 @@ class RayTracer {
 
 public:
     void readSceneFromFile(char *input_file);
-    void renderToImage(Image &img);
+    void renderToImage(Image &img, bool shade_back = false);
     void renderDepthToImage(Image &img, float depMin, float depMax);
+    void renderNormalToImage(Image &img);
 };
 
 #endif //ASSIGNMENTS_RAYTRACER_H

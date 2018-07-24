@@ -2,53 +2,29 @@
 // Created by Nycshisan on 2018/7/23.
 //
 
-#include <cstring>
-#include <cassert>
-#include <cstdio>
-
+#include "commandLineArgumentParser.h"
 #include "image.h"
 #include "raytracer.h"
 
 int main(int argc, char* argv[]) {
-    char *input_file = nullptr;
-    int width = 100;
-    int height = 100;
-    char *output_file = nullptr;
-    float depth_min = 0;
-    float depth_max = 1;
-    char *depth_file = nullptr;
+    auto cmdlParser = CommandLineArgumentParser();
+    cmdlParser.parse(argc, argv);
 
-    for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i],"-input")) {
-            i++; assert (i < argc);
-            input_file = argv[i];
-        } else if (!strcmp(argv[i],"-size")) {
-            i++; assert (i < argc);
-            width = atoi(argv[i]);
-            i++; assert (i < argc);
-            height = atoi(argv[i]);
-        } else if (!strcmp(argv[i],"-output")) {
-            i++; assert (i < argc);
-            output_file = argv[i];
-        } else if (!strcmp(argv[i],"-depth")) {
-            i++; assert (i < argc);
-            depth_min = atof(argv[i]);
-            i++; assert (i < argc);
-            depth_max = atof(argv[i]);
-            i++; assert (i < argc);
-            depth_file = argv[i];
-        } else {
-            printf ("whoops error with command line argument %d: '%s'\n",i,argv[i]);
-            assert(0);
-        }
+    auto img = Image(cmdlParser.width, cmdlParser.height);
+    RayTracer rayTracer;
+    rayTracer.readSceneFromFile(cmdlParser.input_file);
+    rayTracer.renderToImage(img, cmdlParser.shade_back);
+    img.SaveTGA(cmdlParser.output_file);
+
+    if (cmdlParser.depth_file != nullptr) {
+        rayTracer.renderDepthToImage(img, cmdlParser.depth_min, cmdlParser.depth_max);
+        img.SaveTGA(cmdlParser.depth_file);
     }
 
-    auto img = Image(width, height);
-    RayTracer rayTracer;
-    rayTracer.readSceneFromFile(input_file);
-    rayTracer.renderToImage(img);
-    img.SaveTGA(output_file);
+    if (cmdlParser.normal_file != nullptr) {
+        rayTracer.renderNormalToImage(img);
+        img.SaveTGA(cmdlParser.normal_file);
+    }
 
-    rayTracer.renderDepthToImage(img, depth_min, depth_max);
-    img.SaveTGA(depth_file);
+
 }

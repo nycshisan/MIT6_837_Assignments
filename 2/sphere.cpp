@@ -30,7 +30,10 @@ bool Sphere::intersect(const Ray &r, Hit &h, float tmin) {
     } else {
         return false;
     }
-    h = Hit(t, _m);
+    auto intersection = r.pointAtParameter(t);
+    auto normal = intersection - _center;
+    normal.Normalize();
+    h = Hit(t, _m, normal);
     return true;
 }
 

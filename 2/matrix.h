@@ -59,6 +59,7 @@ public:
   friend Matrix operator*(const Matrix &m1, const Matrix &m2);
   friend Matrix operator*(const Matrix &m1, float f);
   friend Vec3f operator*(const Matrix &m1, const Vec3f &v);
+  friend Vec4f operator*(const Matrix &m1, const Vec4f &v);
   friend Matrix operator*(float f, const Matrix &m) { return m * f; }
   Matrix& operator+=(const Matrix& m) { *this = *this + m; return *this; }
   Matrix& operator-=(const Matrix& m) { *this = *this - m; return *this; }

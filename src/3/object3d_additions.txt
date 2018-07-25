@@ -1,6 +1,3 @@
-
-<!-- saved from url=(0093)http://10.76.1.181/courses/training/mitF04/assignments/assignment3/object3d_additions.txt.htm -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><link type="text/css" rel="stylesheet" href="chrome-extension://pioclpoplcdbaefihamjohnefbikjilc/content.css"></head><body>// ====================================================================
 // Add the following pure virtual function to Object3D and define it
 // in each of its subclasses.  The paint routine is responsible for
 // making the OpenGL calls to draw the object to the screen.
@@ -96,6 +93,4 @@
 // always appear between glBegin() and glEnd() statements.  Other
 // commands, like glPushMatrix() or glTranslate(), should not appear
 // between glBegin() and glEnd().
-// ====================================================================
-
-</gl></body></html>
+// ===================================================================

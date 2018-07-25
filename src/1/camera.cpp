@@ -19,8 +19,9 @@ OrthographicCamera::OrthographicCamera(const Vec3f &center, const Vec3f &directi
     _center = center;
     _direction = direction;
     _direction.Normalize();
-    _up = up - _direction * _up.Dot3(_direction);
+    Vec3f::Cross3(_horizontal, direction, up);
+    _horizontal.Normalize();
+    Vec3f::Cross3(_up, _horizontal, direction);
     _up.Normalize();
-    Vec3f::Cross3(_horizontal, _direction, _up);
     _size = size;
 }

@@ -5,6 +5,9 @@
 #ifndef ASSIGNMENTS_CAMERA_H
 #define ASSIGNMENTS_CAMERA_H
 
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+
 #include "vectors.h"
 #include "ray.h"
 
@@ -12,6 +15,12 @@ class Camera {
 public:
     virtual Ray generateRay(Vec2f point) = 0;
     virtual float getTMin() const = 0;
+
+    virtual void glInit(int w, int h) = 0;
+    virtual void glPlaceCamera(void) = 0;
+    virtual void dollyCamera(float dist) = 0;
+    virtual void truckCamera(float dx, float dy) = 0;
+    virtual void rotateCamera(float rx, float ry) = 0;
 
     virtual ~Camera() = default;
 };
@@ -25,6 +34,12 @@ public:
 
     Ray generateRay(Vec2f point) override;
     float getTMin() const override;
+
+    void glInit(int w, int h) override;
+    void glPlaceCamera(void) override;
+    void dollyCamera(float dist) override;
+    void truckCamera(float dx, float dy) override;
+    void rotateCamera(float rx, float ry) override;
 };
 
 class PerspectiveCamera : public Camera {
@@ -36,6 +51,12 @@ public:
 
     Ray generateRay(Vec2f point) override;
     float getTMin() const override;
+
+    void glInit(int w, int h) override;
+    void glPlaceCamera(void) override;
+    void dollyCamera(float dist) override;
+    void truckCamera(float dx, float dy) override;
+    void rotateCamera(float rx, float ry) override;
 };
 
 

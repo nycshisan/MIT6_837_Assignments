@@ -36,8 +36,12 @@ void RayTracer::renderToImage(Image &img, bool shade_back) {
             Hit hit;
             if (group->intersect(ray, hit, camera->getTMin())) {
                 auto norm = hit.getNormal();
-                if (shade_back && norm.Dot3(ray.getDirection()) > 0) {
-                    norm.Negate();
+                bool isBackSide = norm.Dot3(ray.getDirection()) > 0;
+                if (isBackSide) {
+                    if (shade_back)
+                        norm.Negate();
+                    else
+                        continue;
                 }
 
                 auto m = hit.getMaterial();

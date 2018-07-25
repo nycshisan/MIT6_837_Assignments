@@ -19,6 +19,8 @@ public:
   // ACCESSORS
   virtual Vec3f getDiffuseColor() const { return diffuseColor; }
 
+  virtual void glSetMaterial(void) const = 0;
+
 protected:
 
   // REPRESENTATION

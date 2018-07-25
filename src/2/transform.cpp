@@ -32,7 +32,9 @@ bool Transform::intersect(const Ray &r, Hit &h, float tmin) {
     if (_object->intersect(transformedRay, osHit, tmin)) {
         // transform normal from object space to world space
         auto osNorm = osHit.getNormal();
-        auto wsNorm = _invTpMat * osNorm;
+        auto hOsNorm = Vec4f(osNorm, 0.f);
+        auto hWsNorm = _invTpMat * hOsNorm;
+        auto wsNorm = hWsNorm.xyz();
         wsNorm.Normalize();
         // transform depth from object space to world space
         float osT = osHit.getT();

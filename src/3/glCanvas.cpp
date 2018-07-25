@@ -4,9 +4,7 @@
 #include "camera.h"
 #include "group.h"
 
-// Included files for OpenGL Rendering
-#include <OpenGL/gl.h>
-#include <GLUT/glut.h>
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 // ========================================================
 
@@ -241,23 +239,24 @@ void GLCanvas::keyboard(unsigned char key, int x, int y) {
 // by calling 'exit(0)'
 // ========================================================
 
-void GLCanvas::initialize(SceneParser *_scene, void (*_renderFunction)(void)) {
+void GLCanvas::initialize(int argc, char* argv[], SceneParser *_scene, void (*_renderFunction)()) {
   scene = _scene;
   renderFunction = _renderFunction;
 
-  // Set global lighting parameters
-  glEnable(GL_LIGHTING);
-  glShadeModel(GL_SMOOTH);
-  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-
+  glutInit(&argc, argv);
   // Set window parameters
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB);
-  glEnable(GL_DEPTH_TEST);
   // OPTIONAL: If you'd like to set the window size from 
   // the command line, do that here
   glutInitWindowSize(400,400);
   glutInitWindowPosition(100,100);
   glutCreateWindow("OpenGL Viewer");
+
+  // Set global lighting parameters
+  glEnable(GL_LIGHTING);
+  glEnable(GL_DEPTH_TEST);
+  glShadeModel(GL_SMOOTH);
+  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
   glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
   glEnable(GL_NORMALIZE);

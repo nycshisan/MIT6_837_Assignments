@@ -18,6 +18,7 @@ class RayTracer {
     std::shared_ptr<SceneParser> _sceneParser;
 
 public:
+    std::shared_ptr<SceneParser> getSceneParser() { return _sceneParser; }
     void readSceneFromFile(char *input_file);
     void renderToImage(Image &img, bool shade_back = false);
     void renderDepthToImage(Image &img, float depMin, float depMax);

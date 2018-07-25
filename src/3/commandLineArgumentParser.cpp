@@ -33,6 +33,8 @@ void CommandLineArgumentParser::parse(int argc, char **argv) {
             normal_file = argv[i];
         } else if (!strcmp(argv[i],"-shade_back")) {
             shade_back = true;
+        } else if (!strcmp(argv[i],"-gui")) {
+            use_gui = true;
         } else {
             printf ("whoops error with command line argument %d: '%s'\n",i,argv[i]);
             assert(0);

@@ -50,6 +50,9 @@ set_target_properties(A2 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A2"
         OUTPUT_NAME "raytracer")
 
+find_package(OpenGL)
+find_package(GLUT)
+
 add_executable(A3
         src/3/main.cpp
         src/3/matrix.cpp
@@ -62,11 +65,13 @@ add_executable(A3
         src/3/triangle.cpp
         src/3/transform.cpp
         src/3/commandLineArgumentParser.cpp
+        src/3/scene_parser.cpp
         src/3/light.cpp
-        src/3/glCanvas.cpp)
+        src/3/glCanvas.cpp
+        src/3/material.cpp)
 
 set_target_properties(A3 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A3"
         OUTPUT_NAME "raytracer")
 
-target_link_libraries(A3 OpenGL GLUT)
+target_link_libraries(A3 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})

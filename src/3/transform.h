@@ -16,6 +16,7 @@ public:
     Transform(const Matrix &mat, Object3D *object);
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
+    void paint() override;
 };
 
 #endif //ASSIGNMENTS_TRANSFORM_H

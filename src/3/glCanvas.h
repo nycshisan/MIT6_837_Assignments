@@ -13,6 +13,10 @@
 
 #include <stdlib.h>
 
+// Included files for OpenGL Rendering
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
+
 class SceneParser;
 
 // ====================================================================
@@ -21,7 +25,7 @@ class SceneParser;
 
 //   0: don't fix   
 //   1: do fix
-#define SPECULAR_FIX 0 
+#define SPECULAR_FIX 0
 
 // ====================================================================
 
@@ -29,8 +33,8 @@ class GLCanvas {
 
 private:
   // A reference to the function that performs the raytracing
-  // This gets called from the 'keyboard' rotine
-  static void (*renderFunction)(void);
+  // This gets called from the 'keyboard' routine
+  static void (*renderFunction)();
 
   // A pointer to the global SceneParser
   static SceneParser *scene;
@@ -41,10 +45,10 @@ private:
   static int mouseY;
 
   // Helper function for the display routine
-  static void drawAxes(void);
+  static void drawAxes();
 
   // Callback functions for mouse and keyboard events
-  static void display(void);
+  static void display();
   static void reshape(int w, int h);
   static void mouse(int button, int state, int x, int y);
   static void motion(int x, int y);
@@ -52,14 +56,13 @@ private:
 
 public:
   // Constructor and destructor
-  GLCanvas(void) {
-    renderFunction = NULL;}
- ~GLCanvas(void) { }
+  GLCanvas() { renderFunction = nullptr;}
+ ~GLCanvas() = default;
 
   // Set up the canvas and enter the rendering loop
   // Note that this function will not return but can be
   // terminated by calling 'exit(0)'
-  void initialize(SceneParser *_scene, void (*_renderFunction)(void));
+  void initialize(int argc, char* argv[], SceneParser *_scene, void (*_renderFunction)());
 };
 
 // ====================================================================

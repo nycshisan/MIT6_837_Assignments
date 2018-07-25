@@ -31,3 +31,9 @@ Group::Group(int nObjects) {
     _nObjects = (unsigned long)nObjects;
     _objs.resize(_nObjects);
 }
+
+void Group::paint() {
+    for (int i = 0; i < _nObjects; ++i) {
+        _objs[i]->paint();
+    }
+}

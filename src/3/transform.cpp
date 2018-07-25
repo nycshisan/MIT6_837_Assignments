@@ -45,3 +45,12 @@ bool Transform::intersect(const Ray &r, Hit &h, float tmin) {
         return false;
     };
 }
+
+void Transform::paint() {
+    glPushMatrix();
+    GLfloat *glMatrix = _mat.glGet();
+    glMultMatrixf(glMatrix);
+    delete[] glMatrix;
+    _object->paint();
+    glPopMatrix();
+}

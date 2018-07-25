@@ -16,6 +16,7 @@ public:
     char *depth_file = nullptr;
     char *normal_file = nullptr;
     bool shade_back = false;
+    bool use_gui = false;
 
     void parse(int argc, char *argv[]);
 };

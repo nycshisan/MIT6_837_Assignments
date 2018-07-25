@@ -42,3 +42,7 @@ Sphere::Sphere(const Vec3f &center, float radius, Material *material) {
     _radius = radius;
     _m = material;
 }
+
+void Sphere::paint() {
+
+}

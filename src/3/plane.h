@@ -17,6 +17,7 @@ public:
     Plane(const Vec3f &v0, const Vec3f &v1, const Vec3f &v2, Material *m);
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
+    void paint() override;
 };
 
 #endif //ASSIGNMENTS_PLANE_H

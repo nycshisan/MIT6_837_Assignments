@@ -48,3 +48,18 @@ bool Triangle::intersect(const Ray &r, Hit &h, float tmin) {
         return false;
     }
 }
+
+void Triangle::paint() {
+    GLfloat x, y, z;
+
+    _m->glSetMaterial();
+
+    glBegin(GL_TRIANGLES);
+    _v0.Get(x, y, z);
+    glVertex3f(x, y, z);
+    _v1.Get(x, y, z);
+    glVertex3f(x, y, z);
+    _v2.Get(x, y, z);
+    glVertex3f(x, y, z);
+    glEnd();
+}

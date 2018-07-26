@@ -8,6 +8,10 @@
 #include <cassert>
 #include <cstdio>
 
+/* Sphere arguments */
+extern int g_theta_steps, g_phi_steps;
+extern bool g_gouraud;
+
 void CommandLineArgumentParser::parse(int argc, char **argv) {
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i],"-input")) {
@@ -35,6 +39,13 @@ void CommandLineArgumentParser::parse(int argc, char **argv) {
             shade_back = true;
         } else if (!strcmp(argv[i],"-gui")) {
             use_gui = true;
+        } else if (!strcmp(argv[i],"-tessellation")) {
+            i++; assert(i < argc);
+            g_theta_steps = atoi(argv[i]);
+            i++; assert(i < argc);
+            g_phi_steps = atoi(argv[i]);
+        } else if (!strcmp(argv[i],"-gouraud")) {
+            g_gouraud = true;
         } else {
             printf ("whoops error with command line argument %d: '%s'\n",i,argv[i]);
             assert(0);

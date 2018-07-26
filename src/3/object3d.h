@@ -9,6 +9,7 @@
 
 #include "ray.h"
 #include "hit.h"
+#include "material.h"
 
 class Object3D {
 protected:

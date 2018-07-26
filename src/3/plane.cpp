@@ -39,14 +39,27 @@ void Plane::paint() {
     } else {
         v.Set(1.f, 0.f, 0.f);
     }
-    Vec3f b1, b2;
+    Vec3f b1, b2, b3, b4;
     Vec3f::Cross3(b1, v, _normal);
     Vec3f::Cross3(b2, _normal, b1);
 
+    float big = 1e4;
+
     b1.Normalize();
-    b1 *= float(1e4);
+    b3 = b1;
+    b3.Negate();
+    b1 *= big;
+    b1 += _normal * _offset;
+    b3 *= big;
+    b3 += _normal * _offset;
+
     b2.Normalize();
-    b2 *= float(1e4);
+    b4 = b2;
+    b4.Negate();
+    b2 *= big;
+    b2 += _normal * _offset;
+    b4 *= big;
+    b4 += _normal * _offset;
 
     GLfloat x, y, z;
 
@@ -57,11 +70,9 @@ void Plane::paint() {
     glVertex3f(x, y, z);
     b2.Get(x, y, z);
     glVertex3f(x, y, z);
-    b1.Negate();
-    b1.Get(x, y, z);
+    b3.Get(x, y, z);
     glVertex3f(x, y, z);
-    b2.Negate();
-    b2.Get(x, y, z);
+    b4.Get(x, y, z);
     glVertex3f(x, y, z);
     glEnd();
 }

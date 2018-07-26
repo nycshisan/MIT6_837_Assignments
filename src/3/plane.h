@@ -6,7 +6,6 @@
 #define ASSIGNMENTS_PLANE_H
 
 #include "object3d.h"
-#include "material.h"
 
 class Plane : public Object3D {
     Vec3f _normal;

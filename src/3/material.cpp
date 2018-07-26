@@ -74,6 +74,6 @@ Vec3f PhongMaterial::Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLig
     Vec3f h = v + dirToLight;
     h.Normalize();
 
-    // suppose k_s = specularColor and ignore r^2 coefficient
+    // ignore r^2 coefficient
     return getSpecularColor() * lightColor * powf(hit.getNormal().Dot3(h), _exponent);
 }

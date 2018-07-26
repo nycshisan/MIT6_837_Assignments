@@ -15,6 +15,8 @@ class Sphere : public Object3D {
     Vec3f _center;
     float _radius;
 
+    void getXYZBySphereCoord(float theta, float phi, float &x, float &y, float &z);
+
 public:
     Sphere(const Vec3f &center, float radius, Material *material);
     bool intersect(const Ray &r, Hit &h, float tmin) override;

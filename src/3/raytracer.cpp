@@ -44,10 +44,11 @@ void RayTracer::renderToImage(Image &img, bool shade_back) {
                 auto cObj = m->getDiffuseColor();
                 auto color = ambient * cObj;
                 for (int i = 0; i < nLights; ++i) {
-                    Vec3f intersection = hit.getIntersectionPoint(), lightDir, cLight;
+                    Vec3f intersection = hit.getIntersectionPoint(), dirToLight, cLight;
                     float distToLight;
-                    lights[i]->getIllumination(intersection, lightDir, cLight, distToLight);
-                    color += std::max(0.f, lightDir.Dot3(norm)) * cLight * cObj;
+                    lights[i]->getIllumination(intersection, dirToLight, cLight, distToLight);
+                    color += std::max(0.f, dirToLight.Dot3(norm)) * cLight * cObj;
+                    color += m->Shade(ray, hit, dirToLight, cLight);
                 }
                 img.SetPixel(x, y, color);
             }

@@ -14,6 +14,7 @@ void RayTracer::readSceneFromFile(char *input_file) {
 }
 
 void RayTracer::renderToImage(Image &img, bool shade_back) {
+    auto blackColor = Vec3f(0.f, 0.f, 0.f);
     auto bgColor = _sceneParser->getBackgroundColor();
     img.SetAllPixels(bgColor);
 
@@ -40,8 +41,10 @@ void RayTracer::renderToImage(Image &img, bool shade_back) {
                 if (isBackSide) {
                     if (shade_back)
                         norm.Negate();
-                    else
+                    else {
+                        img.SetPixel(x, y, blackColor);
                         continue;
+                    }
                 }
 
                 auto m = hit.getMaterial();

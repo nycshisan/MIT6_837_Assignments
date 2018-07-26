@@ -10,8 +10,6 @@ Triangle::Triangle(const Vec3f &v0, const Vec3f &v1, const Vec3f &v2, Material *
     _v2 = v2;
     _m = m;
 
-    _barycenter = (v0 + v1 + v2) * (1.f / 3.f);
-
     Vec3f v0v1 = v1 - v0, v1v2 = v2 - v1;
     Vec3f::Cross3(_norm, v0v1, v1v2);
     _norm.Normalize();

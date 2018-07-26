@@ -105,9 +105,8 @@ void GLCanvas::display(void)
   // ========================================================
   // DRAW AXES
   // remove this line once you've started rendering primitive objects
-  drawAxes(); 
+  // drawAxes();
   // ========================================================
-
   glEnable(GL_LIGHTING);
   glEnable(GL_DEPTH_TEST);
 
@@ -115,6 +114,8 @@ void GLCanvas::display(void)
   for (int i=0; i<scene->getNumLights(); i++) {
     scene->getLight(i)->glInit(i);
   }
+
+
 
 #if !SPECULAR_FIX
 
@@ -239,10 +240,12 @@ void GLCanvas::keyboard(unsigned char key, int x, int y) {
 // by calling 'exit(0)'
 // ========================================================
 
-void GLCanvas::initialize(int argc, char* argv[], SceneParser *_scene, void (*_renderFunction)()) {
+void GLCanvas::initialize(SceneParser *_scene, void (*_renderFunction)()) {
   scene = _scene;
   renderFunction = _renderFunction;
 
+  int argc = 0;
+  char **argv = nullptr;
   glutInit(&argc, argv);
   // Set window parameters
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB);
@@ -255,11 +258,10 @@ void GLCanvas::initialize(int argc, char* argv[], SceneParser *_scene, void (*_r
   // Set global lighting parameters
   glEnable(GL_LIGHTING);
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_NORMALIZE);
   glShadeModel(GL_SMOOTH);
   glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-
   glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
-  glEnable(GL_NORMALIZE);
 
   // Ambient light
   Vec3f ambColor = scene->getAmbientLight();

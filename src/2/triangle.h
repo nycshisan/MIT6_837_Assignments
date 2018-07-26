@@ -11,7 +11,7 @@
 #include "vectors.h"
 
 class Triangle : public Object3D {
-    Vec3f _v0, _v1, _v2, _norm, _barycenter;
+    Vec3f _v0, _v1, _v2, _norm;
     Plane _plane;
 
 public:

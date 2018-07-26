@@ -62,7 +62,7 @@ public:
   // Set up the canvas and enter the rendering loop
   // Note that this function will not return but can be
   // terminated by calling 'exit(0)'
-  void initialize(int argc, char* argv[], SceneParser *_scene, void (*_renderFunction)());
+  void initialize(SceneParser *_scene, void (*_renderFunction)());
 };
 
 // ====================================================================

@@ -55,6 +55,8 @@ void Triangle::paint() {
     _m->glSetMaterial();
 
     glBegin(GL_TRIANGLES);
+    _norm.Get(x, y, z);
+    glNormal3f(x, y, z);
     _v0.Get(x, y, z);
     glVertex3f(x, y, z);
     _v1.Get(x, y, z);

@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
     if (cmdlParser.use_gui) {
         GLCanvas canvas;
-        canvas.initialize(argc, argv, rayTracer.getSceneParser().get(), renderFunc);
+        canvas.initialize(rayTracer.getSceneParser().get(), renderFunc);
     } else {
         renderFunc();
     }

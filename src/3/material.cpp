@@ -44,7 +44,6 @@ void PhongMaterial::glSetMaterial() const {
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, &glExponent);
 
 #else
-
     // OPTIONAL: 3 pass rendering to fix the specular highlight
     // artifact for small specular exponents (wide specular lobe)
 
@@ -70,5 +69,11 @@ void PhongMaterial::glSetMaterial() const {
 }
 
 Vec3f PhongMaterial::Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLight, const Vec3f &lightColor) const {
+    Vec3f v = ray.getDirection();
+    v.Negate();
+    Vec3f h = v + dirToLight;
+    h.Normalize();
 
+    // suppose k_s = specularColor and ignore r^2 coefficient
+    return getSpecularColor() * lightColor * powf(hit.getNormal().Dot3(h), _exponent);
 }

@@ -36,7 +36,7 @@ public:
     float getTMin() const override;
 
     void glInit(int w, int h) override;
-    void glPlaceCamera(void) override;
+    void glPlaceCamera() override;
     void dollyCamera(float dist) override;
     void truckCamera(float dx, float dy) override;
     void rotateCamera(float rx, float ry) override;
@@ -53,7 +53,7 @@ public:
     float getTMin() const override;
 
     void glInit(int w, int h) override;
-    void glPlaceCamera(void) override;
+    void glPlaceCamera() override;
     void dollyCamera(float dist) override;
     void truckCamera(float dx, float dy) override;
     void rotateCamera(float rx, float ry) override;

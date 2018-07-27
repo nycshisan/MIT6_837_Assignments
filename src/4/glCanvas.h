@@ -13,6 +13,10 @@
 
 #include <stdlib.h>
 
+// Included files for OpenGL Rendering
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
+
 class SceneParser;
 
 // ====================================================================

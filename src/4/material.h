@@ -35,11 +35,12 @@ protected:
 // ====================================================================
 
 class PhongMaterial : public Material {
-    Vec3f _specularColor;
-    float _exponent;
+    Vec3f _specularColor, _reflectiveColor, _transparentColor;
+    float _exponent, _indexOfRefraction;
 
 public:
-    PhongMaterial(const Vec3f &diffuseColor, const Vec3f &specularColor, float exponent);
+    PhongMaterial(const Vec3f &diffuseColor, const Vec3f &specularColor, float exponent,
+                                 const Vec3f &reflectiveColor, const Vec3f &transparentColor, float indexOfRefraction);
 
     Vec3f getSpecularColor() const { return _specularColor; }
 

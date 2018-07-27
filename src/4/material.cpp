@@ -12,9 +12,14 @@
 extern int SPECULAR_FIX_WHICH_PASS;
 #endif
 
-PhongMaterial::PhongMaterial(const Vec3f &diffuseColor, const Vec3f &specularColor, float exponent) : Material(diffuseColor) {
+PhongMaterial::PhongMaterial(const Vec3f &diffuseColor, const Vec3f &specularColor, float exponent,
+                             const Vec3f &reflectiveColor, const Vec3f &transparentColor, float indexOfRefraction)
+        : Material(diffuseColor) {
     _specularColor = specularColor;
+    _reflectiveColor = reflectiveColor;
+    _transparentColor = transparentColor;
     _exponent = exponent;
+    _indexOfRefraction = indexOfRefraction;
 }
 
 void PhongMaterial::glSetMaterial() const {

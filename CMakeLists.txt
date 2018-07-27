@@ -91,10 +91,13 @@ add_executable(A4
         src/4/scene_parser.cpp
         src/4/light.cpp
         src/4/glCanvas.cpp
-        src/4/material.cpp)
+        src/4/material.cpp
+        src/4/rayTree.cpp)
 
 set_target_properties(A4 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A4"
         OUTPUT_NAME "raytracer")
 
 target_link_libraries(A4 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
+
+target_compile_options(A4 PUBLIC "-Wno-deprecated-declarations")

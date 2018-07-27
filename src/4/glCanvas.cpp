@@ -5,10 +5,6 @@
 #include "group.h"
 #include "rayTree.h"
 
-// Included files for OpenGL Rendering
-#include <GL/gl.h>
-#include <GL/glut.h>
-
 // ========================================================
 
 // STATIC VARIABLES

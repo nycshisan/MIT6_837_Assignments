@@ -6,6 +6,8 @@
 
 #include <cmath>
 
+static float _err = 1e-3f;
+
 Plane::Plane(const Vec3f &normal, float offset, Material *m) {
     _normal = normal;
     _offset = offset;
@@ -14,8 +16,13 @@ Plane::Plane(const Vec3f &normal, float offset, Material *m) {
 
 bool Plane::intersect(const Ray &r, Hit &h, float tmin) {
     Hit hit;
-    float t = (_offset - _normal.Dot3(r.getOrigin())) / _normal.Dot3(r.getDirection());
-    hit.set(t, _m, _normal, r);
+    auto nRd = _normal.Dot3(r.getDirection());
+    if (std::fabsf(nRd) < _err) {
+        // vertical
+        return false;
+    }
+    float t = (_offset - _normal.Dot3(r.getOrigin())) / nRd;
+    hit.set(t, _m, _normal, r, Hit::ObjectType::Plane);
     if (t >= tmin) {
         h = hit;
         return true;

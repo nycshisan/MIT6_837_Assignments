@@ -4,10 +4,7 @@
 
 #include "group.h"
 
-#include "limits"
-
 bool Group::intersect(const Ray &r, Hit &h, float tmin) {
-    h = Hit(std::numeric_limits<float>::max(), nullptr, Vec3f());
     bool success = false;
     for (auto obj: _objs) {
         Hit currentHit;

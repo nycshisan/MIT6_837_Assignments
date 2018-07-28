@@ -107,6 +107,10 @@ void OrthographicCamera::rotateCamera(float rx, float ry) {
 
     rotMat.Transform(_center);
     rotMat.TransformDirection(_direction);
+    Vec3f::Cross3(_horizontal, _direction, _rawUp);
+    _horizontal.Normalize();
+    Vec3f::Cross3(_up, _horizontal, _direction);
+    _up.Normalize();
 }
 
 void PerspectiveCamera::glInit(int w, int h) {
@@ -156,4 +160,8 @@ void PerspectiveCamera::rotateCamera(float rx, float ry) {
     rotMat.Transform(_center);
     rotMat.TransformDirection(_direction);
     _direction.Normalize();
+    Vec3f::Cross3(_horizontal, _direction, _rawUp);
+    _horizontal.Normalize();
+    Vec3f::Cross3(_up, _horizontal, _direction);
+    _up.Normalize();
 }

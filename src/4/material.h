@@ -20,6 +20,10 @@ public:
 
   // ACCESSORS
   virtual Vec3f getDiffuseColor() const { return _diffuseColor; }
+  virtual Vec3f getSpecularColor() const = 0;
+  virtual Vec3f getReflectiveColor() const = 0;
+  virtual Vec3f getTransparentColor() const = 0;
+  virtual float getIndexOfRefraction() const = 0;
 
   virtual void glSetMaterial() const = 0;
   virtual Vec3f Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLight, const Vec3f &lightColor) const = 0;
@@ -42,7 +46,10 @@ public:
     PhongMaterial(const Vec3f &diffuseColor, const Vec3f &specularColor, float exponent,
                                  const Vec3f &reflectiveColor, const Vec3f &transparentColor, float indexOfRefraction);
 
-    Vec3f getSpecularColor() const { return _specularColor; }
+    Vec3f getSpecularColor() const override { return _specularColor; }
+    Vec3f getReflectiveColor() const override { return _reflectiveColor; }
+    Vec3f getTransparentColor() const override { return _transparentColor; }
+    float getIndexOfRefraction() const override { return _indexOfRefraction; }
 
     void glSetMaterial() const override;
     Vec3f Shade(const Ray &ray, const Hit &hit, const Vec3f &dirToLight, const Vec3f &lightColor) const override;

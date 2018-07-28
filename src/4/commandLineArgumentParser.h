@@ -17,9 +17,9 @@ public:
     char *normal_file = nullptr;
     bool shade_back = false;
     bool use_gui = false;
-    bool shadow = false;
-    int bounce = 0;
-    float weight = 0;
+    bool cast_shadow = false;
+    int max_bounces = 0;
+    float cutoff_weight = 0;
 
     void parse(int argc, char *argv[]);
 };

@@ -265,28 +265,29 @@ void GLCanvas::initialize(SceneParser *_scene, void (*_renderFunction)(void), vo
   renderFunction = _renderFunction;
   traceRayFunction = _traceRayFunction;
 
-  // Set global lighting parameters
-  glEnable(GL_LIGHTING);
-  glShadeModel(GL_SMOOTH);
-  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-
-
+  int argc = 0;
+  char **argv = nullptr;
+  glutInit(&argc, argv);
   // Set window parameters
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB);
-  glEnable(GL_DEPTH_TEST);
-  // OPTIONAL: If you'd like to set the window size from 
+  // OPTIONAL: If you'd like to set the window size from
   // the command line, do that here
   glutInitWindowSize(400,400);
   glutInitWindowPosition(100,100);
   glutCreateWindow("OpenGL Viewer");
 
-  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+  // Set global lighting parameters
+  glEnable(GL_LIGHTING);
+  glEnable(GL_DEPTH_TEST);
   glEnable(GL_NORMALIZE);
+  glShadeModel(GL_SMOOTH);
+  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+  glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 
   // Ambient light
   Vec3f ambColor = scene->getAmbientLight();
-  GLfloat ambArr[] = { ambColor.x(), ambColor.y(), ambColor.z(), 1.0 };
-  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambArr);
+  GLfloat ambient[] = { ambColor.r(), ambColor.g(), ambColor.b(), 1.0 };
+  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient);
 
   // Initialize callback functions
   glutMouseFunc(mouse);

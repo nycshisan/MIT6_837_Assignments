@@ -39,8 +39,12 @@ bool Transform::intersect(const Ray &r, Hit &h, float tmin) {
         // transform depth from object space to world space
         float osT = osHit.getT();
         float wsT = osT / transformedRayDirLength;
-        h = Hit(wsT, osHit.getMaterial(), wsNorm);
-        return true;
+        if (wsT >= tmin) {
+            h.set(wsT, osHit.getMaterial(), wsNorm, r, osHit.getObjectType());
+            return true;
+        } else {
+            return false;
+        }
     } else {
         return false;
     };

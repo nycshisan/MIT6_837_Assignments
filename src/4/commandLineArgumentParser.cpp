@@ -47,13 +47,13 @@ void CommandLineArgumentParser::parse(int argc, char **argv) {
         } else if (!strcmp(argv[i],"-gouraud")) {
             g_gouraud = true;
         } else if (!strcmp(argv[i],"-shadows")) {
-            shadow = true;
+            cast_shadow = true;
         } else if (!strcmp(argv[i],"-bounces")) {
             i++; assert(i < argc);
-            bounce = atoi(argv[i]);
+            max_bounces = atoi(argv[i]);
         } else if (!strcmp(argv[i],"-weight")) {
             i++; assert(i < argc);
-            weight = atof(argv[i]);
+            cutoff_weight = atof(argv[i]);
         } else {
             printf ("whoops error with command line argument %d: '%s'\n",i,argv[i]);
             assert(0);

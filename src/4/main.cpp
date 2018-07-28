@@ -11,16 +11,16 @@
 #include "scene_parser.h"
 #include "glCanvas.h"
 #include "camera.h"
+#include "rayTree.h"
 
 std::shared_ptr<CommandLineArgumentParser> CmdlParser;
 std::shared_ptr<SceneParser> ScParser;
+std::shared_ptr<RayTracer> RTracer;
 
 void renderFunc() {
     auto imgColor = Image(CmdlParser->width, CmdlParser->height);
     auto imgNormal = Image(CmdlParser->width, CmdlParser->height);
     auto imgDepth = Image(CmdlParser->width, CmdlParser->height);
-
-    RayTracer rayTracer(ScParser, CmdlParser);
 
     imgColor.SetAllPixels(Vec3f(0.f, 0.f, 0.f));
     imgNormal.SetAllPixels(Vec3f(0.f, 0.f, 0.f));
@@ -34,7 +34,7 @@ void renderFunc() {
             Vec2f p(float(x) / CmdlParser->width, float(y) / CmdlParser->height);
             auto ray = camera->generateRay(p);
             Hit hit;
-            auto color = rayTracer.traceRay(ray, camera->getTMin(), 0, 1.f, 1.f, hit);
+            auto color = RTracer->traceRay(ray, camera->getTMin(), 0, 1.f, 1.f, hit);
 
             if (CmdlParser->output_file != nullptr) {
                 imgColor.SetPixel(x, y, color);
@@ -72,13 +72,19 @@ void renderFunc() {
 }
 
 void traceRayFunc(float x, float y) {
-
+    auto *camera = ScParser->getCamera();
+    assert(camera != nullptr);
+    Vec2f p(x, y);
+    auto ray = camera->generateRay(p);
+    Hit hit;
+    RTracer->traceRay(ray, camera->getTMin(), 0, 1.f, 1.f, hit);
 }
 
 int main(int argc, char* argv[]) {
     CmdlParser = std::make_shared<CommandLineArgumentParser>();
     CmdlParser->parse(argc, argv);
     ScParser = std::make_shared<SceneParser>(CmdlParser->input_file);
+    RTracer = std::make_shared<RayTracer>(ScParser, CmdlParser);
 
     if (CmdlParser->use_gui) {
         GLCanvas canvas;

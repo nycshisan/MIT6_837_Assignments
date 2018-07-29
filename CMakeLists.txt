@@ -101,3 +101,30 @@ set_target_properties(A4 PROPERTIES
 target_link_libraries(A4 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
 
 target_compile_options(A4 PUBLIC "-Wno-deprecated-declarations")
+
+add_executable(A5
+        src/5/main.cpp
+        src/5/matrix.cpp
+        src/5/image.cpp
+        src/5/sphere.cpp
+        src/5/raytracer.cpp
+        src/5/camera.cpp
+        src/5/group.cpp
+        src/5/plane.cpp
+        src/5/triangle.cpp
+        src/5/transform.cpp
+        src/5/commandLineArgumentParser.cpp
+        src/5/scene_parser.cpp
+        src/5/light.cpp
+        src/5/glCanvas.cpp
+        src/5/material.cpp
+        src/5/rayTree.cpp
+        src/5/grid.cpp)
+
+set_target_properties(A5 PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A5"
+        OUTPUT_NAME "raytracer")
+
+target_link_libraries(A5 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
+
+target_compile_options(A5 PUBLIC "-Wno-deprecated-declarations")

@@ -153,7 +153,11 @@ public:
   void Get(float &d0, float &d1, float &d2) const {
     d0 = data[0];
     d1 = data[1];
-    d2 = data[2]; }
+    d2 = data[2];
+  }
+  const float *GetData() const {
+    return data;
+  }
   float operator[](int i) const { 
     assert (i >= 0 && i < 3); 
     return data[i]; }
@@ -170,6 +174,9 @@ public:
     return l; }
 
   // MODIFIERS
+  void SetX(float _x) { data[0] = _x; }
+  void SetY(float _y) { data[1] = _y; }
+  void SetZ(float _z) { data[2] = _z; }
   void Set(float d0, float d1, float d2) {
     data[0] = d0;
     data[1] = d1;

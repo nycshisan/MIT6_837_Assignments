@@ -56,6 +56,13 @@ void CommandLineArgumentParser::parse(int argc, char **argv) {
             cutoff_weight = atof(argv[i]);
         } else if (!strcmp(argv[i],"-visualize_grid")) {
             visualize_grid = true;
+        } else if (!strcmp(argv[i],"-grid")) {
+            i++; assert(i < argc);
+            grid_nx = atoi(argv[i]);
+            i++; assert(i < argc);
+            grid_ny = atoi(argv[i]);
+            i++; assert(i < argc);
+            grid_nz = atoi(argv[i]);
         } else {
             printf ("whoops error with command line argument %d: '%s'\n",i,argv[i]);
             assert(0);

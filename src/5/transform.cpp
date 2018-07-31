@@ -12,6 +12,25 @@ Transform::Transform(const Matrix &mat, Object3D *object) {
     _invTpMat = _invMat;
     _invTpMat.Transpose();
     _object = object;
+
+    auto objectBoundingBox = object->getBoundingBox();
+    Vec3f objectBoundingMinMax[2] = { objectBoundingBox->getMin(), objectBoundingBox->getMax() };
+
+    Vec3f boundingVertexes[8];
+
+    for (unsigned i = 0; i < 8; ++i) {
+        auto x = objectBoundingMinMax[i & 0x1u].x();
+        auto y = objectBoundingMinMax[(i & 0x2u) >> 1u].y();
+        auto z = objectBoundingMinMax[(i & 0x4u) >> 2u].z();
+        Vec3f objectBoundingVertex(x, y, z);
+        _mat.Transform(objectBoundingVertex);
+        boundingVertexes[i] = objectBoundingVertex;
+    }
+
+    _boundingBox = std::make_shared<BoundingBox>(Vec3f(), Vec3f());
+    for (const auto &boundingVertex : boundingVertexes) {
+        _boundingBox->Extend(boundingVertex);
+    }
 }
 
 bool Transform::intersect(const Ray &r, Hit &h, float tmin) {

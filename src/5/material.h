@@ -15,6 +15,7 @@ class Material {
 public:
 
   // CONSTRUCTORS & DESTRUCTOR
+  Material() = default;
   explicit Material(const Vec3f &d_color) { _diffuseColor = d_color; }
   virtual ~Material() = default;
 
@@ -43,6 +44,7 @@ class PhongMaterial : public Material {
     float _exponent, _indexOfRefraction;
 
 public:
+    PhongMaterial() = default;
     PhongMaterial(const Vec3f &diffuseColor, const Vec3f &specularColor, float exponent,
                                  const Vec3f &reflectiveColor, const Vec3f &transparentColor, float indexOfRefraction);
 

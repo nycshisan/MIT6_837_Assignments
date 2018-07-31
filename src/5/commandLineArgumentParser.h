@@ -21,6 +21,7 @@ public:
     int max_bounces = 0;
     float cutoff_weight = 0;
     bool visualize_grid = false;
+    int grid_nx = 0, grid_ny = 0, grid_nz = 0;
 
     void parse(int argc, char *argv[]);
 };

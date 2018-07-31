@@ -22,6 +22,11 @@ RayTracer::RayTracer(const std::shared_ptr<SceneParser> &scParser, const shared_
         _lights[i] = _sceneParser->getLight(i);
     }
     _ambient = _sceneParser->getAmbientLight();
+
+    if (_cmdlParser->grid_nx > 0 && _cmdlParser->grid_ny > 0 && _cmdlParser->grid_nz > 0) {
+        _grid = std::make_shared<Grid>(_group->getBoundingBox(), _cmdlParser->grid_nx, _cmdlParser->grid_ny, _cmdlParser->grid_nz);
+        _group->insertIntoGrid(_grid.get(), nullptr);
+    }
 }
 
 Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float indexOfRefraction, Hit &hit) const {
@@ -33,7 +38,13 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
         return Vec3f(0.f, 0.f, 0.f);
 
     Vec3f color;
-    if (_group->intersect(ray, hit, tmin)) {
+    Object3D *scene;
+    if (_cmdlParser->visualize_grid) {
+        scene = _grid.get();
+    } else {
+        scene = _group;
+    }
+    if (scene->intersect(ray, hit, tmin)) {
         color = Vec3f(0.f, 0.f, 0.f);
 
         auto norm = hit.getNormal();
@@ -50,8 +61,11 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
         auto m = hit.getMaterial();
 
         // add help line
+        float mainT = hit.getT();
+        if (_cmdlParser->visualize_grid)
+            mainT = INFINITY;
         if (bounces == 0)
-            RayTree::SetMainSegment(ray, 0, hit.getT());
+            RayTree::SetMainSegment(ray, 0, mainT);
 
         color = _ambient * m->getDiffuseColor();
         auto intersection = hit.getIntersectionPoint();
@@ -64,7 +78,7 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
             if (_cmdlParser->cast_shadow) {
                 Ray shadowRay(intersection, dirToLight);
                 Hit shadowHit;
-                if (_group->intersect(shadowRay, shadowHit, _err) && shadowHit.getT() < distToLight) {
+                if (scene->intersect(shadowRay, shadowHit, _err) && shadowHit.getT() < distToLight) {
                     RayTree::AddShadowSegment(shadowRay, 0, shadowHit.getT());
                     continue;
                 } else {

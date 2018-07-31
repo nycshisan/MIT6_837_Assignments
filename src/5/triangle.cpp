@@ -17,6 +17,11 @@ Triangle::Triangle(const Vec3f &v0, const Vec3f &v1, const Vec3f &v2, Material *
     Vec3f v0v1 = v1 - v0, v1v2 = v2 - v1;
     Vec3f::Cross3(_norm, v0v1, v1v2);
     _norm.Normalize();
+
+    _boundingBox = std::make_shared<BoundingBox>(Vec3f(), Vec3f());
+    _boundingBox->Extend(v0);
+    _boundingBox->Extend(v1);
+    _boundingBox->Extend(v2);
 }
 
 bool Triangle::intersect(const Ray &r, Hit &h, float tmin) {

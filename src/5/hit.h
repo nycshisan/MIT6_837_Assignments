@@ -17,8 +17,6 @@ public:
 
   // CONSTRUCTOR & DESTRUCTOR
   Hit() { material = NULL; t = std::numeric_limits<float>::max(); }
-//  Hit(float _t, Material *m, Vec3f n) {
-//    t = _t; material = m; normal = n; }
   Hit(const Hit &h) { 
     t = h.t; 
     material = h.material; 
@@ -29,7 +27,7 @@ public:
   ~Hit() {}
 
   enum ObjectType {
-      Sphere, Plane, Triangle
+      Sphere, Plane, Triangle, Grid
   };
 
   // ACCESSORS

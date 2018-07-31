@@ -13,6 +13,7 @@
 #include "hit.h"
 #include "group.h"
 #include "light.h"
+#include "grid.h"
 
 class RayTracer {
     std::shared_ptr<SceneParser> _sceneParser;
@@ -28,10 +29,14 @@ class RayTracer {
     bool _transmittedDirection(const Vec3f &normal, const Vec3f &incoming, float index_i, float index_t,
                                Vec3f &transmittedDir) const;
 
+    std::shared_ptr<Grid> _grid;
+
 public:
     RayTracer(const std::shared_ptr<SceneParser> &scParser, const shared_ptr<CommandLineArgumentParser> &cmdlParser);
 
     Vec3f traceRay(Ray &ray, float tmin, int bounces, float weight, float indexOfRefraction, Hit &hit) const;
+
+    Grid *getGrid() { return _grid.get(); }
 };
 
 #endif //ASSIGNMENTS_RAYTRACER_H

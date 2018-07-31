@@ -41,7 +41,7 @@ void Plane::paint() {
     _m->glSetMaterial();
 
     Vec3f v;
-    if (fabsf(_normal.y()) < 1e-3 && fabsf(_normal.z()) < 1e-3) {
+    if (fabsf(_normal.y()) < _err && fabsf(_normal.z()) < _err) {
         v.Set(0.f, 1.f, 0.f);
     } else {
         v.Set(1.f, 0.f, 0.f);

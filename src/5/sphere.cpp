@@ -6,6 +6,21 @@
 
 #include <cmath>
 
+#include "grid.h"
+#include "vectors.h"
+
+static float _err = 1e-4f;
+
+Sphere::Sphere(const Vec3f &center, float radius, Material *material) {
+    _center = center;
+    _radius = radius;
+    _m = material;
+
+    Vec3f boundingRadius(radius, radius, radius);
+    Vec3f boundingMin = center - boundingRadius, boundingMax = center + boundingRadius;
+    _boundingBox = std::make_shared<BoundingBox>(boundingMin, boundingMax);
+}
+
 bool Sphere::intersect(const Ray &r, Hit &h, float tmin) {
     const auto &origin = r.getOrigin();
     auto dOrigin = origin - _center;
@@ -35,12 +50,6 @@ bool Sphere::intersect(const Ray &r, Hit &h, float tmin) {
     normal.Normalize();
     h.set(t, _m, normal, r, Hit::ObjectType::Sphere);
     return true;
-}
-
-Sphere::Sphere(const Vec3f &center, float radius, Material *material) {
-    _center = center;
-    _radius = radius;
-    _m = material;
 }
 
 int g_theta_steps = 10, g_phi_steps = 10;
@@ -96,4 +105,22 @@ void Sphere::getXYZBySphereCoord(float theta, float phi, float &x, float &y, flo
     x = rsint * cosf(theta) + _center.x();
     y = rcost + _center.y();
     z = -(rsint * sinf(theta)) + _center.z();
+}
+
+void Sphere::insertIntoGrid(Grid *g, Matrix *m) {
+    auto bbMin = g->getBBMin(), bbMax = g->getBBMax();
+    int nx, ny, nz; g->getN(nx, ny, nz);
+    float stepX, stepY, stepZ; g->getStep(stepX, stepY, stepZ);
+    float gridDiagLen = Vec3f(stepX, stepY, stepZ).Length() / 2.f;
+    for (int i = 0; i < nx; ++i) {
+        for (int j = 0; j < ny; ++j) {
+            for (int k = 0; k < nz; ++k) {
+                float x = i + 0.5f, y = j + 0.5f, z = k + 0.5f;
+                Vec3f gridCenter = bbMin + Vec3f(x * stepX, y * stepY, z * stepZ);
+                float dist = (gridCenter - _center).Length();
+                if (dist < _radius + gridDiagLen + _err)
+                    g->occupation[i][j][k].emplace_back(this);
+            }
+        }
+    }
 }

@@ -119,7 +119,10 @@ add_executable(A5
         src/5/glCanvas.cpp
         src/5/material.cpp
         src/5/rayTree.cpp
-        src/5/grid.cpp)
+        src/5/grid.cpp
+        src/5/boundingbox.cpp
+        src/5/object3d.cpp
+        src/5/hsl.cpp)
 
 set_target_properties(A5 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A5"

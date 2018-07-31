@@ -77,6 +77,7 @@ void traceRayFunc(float x, float y) {
     Vec2f p(x, y);
     auto ray = camera->generateRay(p);
     Hit hit;
+    RTracer->getGrid()->refreshColorSchema();
     RTracer->traceRay(ray, camera->getTMin(), 0, 1.f, 1.f, hit);
 }
 
@@ -88,7 +89,7 @@ int main(int argc, char* argv[]) {
 
     if (CmdlParser->use_gui) {
         GLCanvas canvas;
-        canvas.initialize(ScParser.get(), renderFunc, traceRayFunc, nullptr, CmdlParser->visualize_grid);
+        canvas.initialize(ScParser.get(), renderFunc, traceRayFunc, RTracer->getGrid(), CmdlParser->visualize_grid);
     } else {
         renderFunc();
     }

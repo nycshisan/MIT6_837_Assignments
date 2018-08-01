@@ -17,6 +17,16 @@ std::shared_ptr<CommandLineArgumentParser> CmdlParser;
 std::shared_ptr<SceneParser> ScParser;
 std::shared_ptr<RayTracer> RTracer;
 
+void traceRayFunc(float x, float y) {
+    auto *camera = ScParser->getCamera();
+    assert(camera != nullptr);
+    Vec2f p(x, y);
+    auto ray = camera->generateRay(p);
+    Hit hit;
+    RTracer->getGrid()->refreshColorSchema();
+    RTracer->traceRay(ray, camera->getTMin(), 0, 1.f, 1.f, hit);
+}
+
 void renderFunc() {
     auto imgColor = Image(CmdlParser->width, CmdlParser->height);
     auto imgNormal = Image(CmdlParser->width, CmdlParser->height);
@@ -31,6 +41,15 @@ void renderFunc() {
 
     for (int y = 0; y < CmdlParser->width; ++y) {
         for (int x = 0; x < CmdlParser->height; ++x) {
+
+//            if (x == 134 && y == 24) {
+//                float xf = ((x + 0.5) -  CmdlParser->width/2.0) / CmdlParser->width + 0.5;
+//                float yf = ((y + 0.5) - CmdlParser->height/2.0) / CmdlParser->height + 0.5;
+//                RayTree::Activate();
+//                traceRayFunc(xf, yf);
+//                RayTree::Deactivate();
+//            }
+
             Vec2f p(float(x) / CmdlParser->width, float(y) / CmdlParser->height);
             auto ray = camera->generateRay(p);
             Hit hit;
@@ -69,16 +88,6 @@ void renderFunc() {
     if (CmdlParser->normal_file != nullptr) {
         imgNormal.SaveTGA(CmdlParser->normal_file);
     }
-}
-
-void traceRayFunc(float x, float y) {
-    auto *camera = ScParser->getCamera();
-    assert(camera != nullptr);
-    Vec2f p(x, y);
-    auto ray = camera->generateRay(p);
-    Hit hit;
-    RTracer->getGrid()->refreshColorSchema();
-    RTracer->traceRay(ray, camera->getTMin(), 0, 1.f, 1.f, hit);
 }
 
 int main(int argc, char* argv[]) {

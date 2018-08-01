@@ -14,9 +14,9 @@
 class MarchingInfo {
 public:
     float tmin;
-    int i, j, k;
-    float t_next_x, t_next_y, t_next_z, d_tx, d_ty, d_tz;
-    int sign_x, sign_y, sign_z;
+    int index[3];
+    Vec3f t_next, d_t;
+    int sign[3];
     Vec3f normal_to_cell;
     bool hit = false;
 };
@@ -26,10 +26,10 @@ class Grid : public Object3D {
 
     int _nx, _ny, _nz;
     Vec3f _bbMin, _bbMax;
-    float _stepX, _stepY, _stepZ;
+    Vec3f _step;
 
     void _initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin);
-    void _addEnteredCell(int i, int j, int k, char axis, char positive);
+    void _addEnteredCell(int i, int j, int k, int index, int positive);
 
     void _nextCell(MarchingInfo &info);
     Material *_getCellMaterial(int index) const;
@@ -57,10 +57,8 @@ public:
     void getN(int &nx, int &ny, int &nz);
     Vec3f getBBMin() { return _bbMin; }
     Vec3f getBBMax() { return _bbMax; }
-    void getStep(float &x, float &y, float &z) {
-        x = _stepX; y = _stepY; z = _stepZ;
-    }
-    void getGridCellIndex(const Vec3f &p, int &i, int &j, int&k);
+    Vec3f getStep() { return _step; }
+    void getGridCellIndex(const Vec3f &p, int index[3]);
 
     void refreshColorSchema() { _crtColorIndex = 0; }
 };

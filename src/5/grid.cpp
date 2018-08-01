@@ -13,7 +13,7 @@
 #include "hsl.h"
 #include "boundingbox.h"
 
-static float _err = 1e-3f;
+static float _err = 1e-5f;
 constexpr int Grid::SchemaColorNumber;
 
 PhongMaterial Grid::GridMaterial(Vec3f(1.f, 1.f, 1.f), Vec3f(), 0.f, Vec3f(), Vec3f(), 1.f);
@@ -35,8 +35,8 @@ Grid::Grid(const std::shared_ptr<BoundingBox> &bb, int nx, int ny, int nz) {
     _nx = nx; _ny = ny; _nz = nz;
 
     _bbMin = _bb->getMin(); _bbMax = _bb->getMax();
-    auto bbStride = _bbMax - _bbMin;
-    _stepX = bbStride.x() / _nx; _stepY = bbStride.y() / _ny; _stepZ = bbStride.z() / _nz;
+    _step = (_bbMax - _bbMin) * Vec3f(1.f / _nx, 1.f / _ny, 1.f / _nz);
+
 
     _m = &GridMaterial;
 
@@ -64,15 +64,15 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
         Vec3f nHit;
         int nObjects = 0;
 
-        while (mi.i >= 0 && mi.i < _nx &&
-               mi.j >= 0 && mi.j < _ny &&
-               mi.k >= 0 && mi.k < _nz) {
-            if (!cells[mi.i][mi.j][mi.k].empty()) {
+        while (mi.index[0] >= 0 && mi.index[0] < _nx &&
+               mi.index[1] >= 0 && mi.index[1] < _ny &&
+               mi.index[2] >= 0 && mi.index[2] < _nz) {
+            if (!cells[mi.index[0]][mi.index[1]][mi.index[2]].empty()) {
                 mi.hit = true;
                 if (!firstHit) {
                     tHit = mi.tmin;
                     nHit = mi.normal_to_cell;
-                    nObjects = static_cast<int>(cells[mi.i][mi.j][mi.k].size());
+                    nObjects = static_cast<int>(cells[mi.index[0]][mi.index[1]][mi.index[2]].size());
                     firstHit = true;
                 }
             }
@@ -98,7 +98,7 @@ void Grid::paint() {
 
                     Vec3f v[8];
                     for (unsigned int m = 0; m < 8; ++m) {
-                        v[m] = _bbMin + Vec3f(_stepX * (i + ((m & 0x4u) >> 2u)), _stepY * (j + ((m & 0x2u) >> 1u)), _stepZ * (k + (m & 0x1u)));
+                        v[m] = _bbMin + _step * Vec3f(i + ((m & 0x4u) >> 2u), j + ((m & 0x2u) >> 1u), k + (m & 0x1u));
                     }
 
                     auto addPointsToGL = [v, this](int i) {
@@ -133,19 +133,16 @@ void Grid::paint() {
 }
 
 void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
-    mi.sign_x = r.getDirection().x() > 0.f ? 1 : -1;
-    mi.sign_y = r.getDirection().y() > 0.f ? 1 : -1;
-    mi.sign_z = r.getDirection().z() > 0.f ? 1 : -1;
+    for (int i = 0; i < 3; ++i) {
+        mi.sign[i] = r.getDirection()[i] > 0.f ? 1 : -1;
+        mi.d_t[i] = _step[i] / r.getDirection()[i] * mi.sign[i];
+    }
 
     const auto &startPoint = r.pointAtParameter(tmin);
 
-    mi.d_tx = _stepX / r.getDirection().x() * mi.sign_x;
-    mi.d_ty = _stepY / r.getDirection().y() * mi.sign_y;
-    mi.d_tz = _stepZ / r.getDirection().z() * mi.sign_z;
-
     Vec3f hitPoint;
     // store the entered face
-    char enteredFaceAxis = 0, enteredFacePositive = 0;
+    int enteredFaceAxis = -1, enteredFacePositive = 0;
 
     if (startPoint.x() > _bbMin.x() && startPoint.x() < _bbMax.x() &&
         startPoint.y() > _bbMin.y() && startPoint.y() < _bbMax.y() &&
@@ -202,10 +199,6 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
         }
 
         // get the shallowest intersect
-        char enteredFace[2][6] = {
-                {'x', 'x', 'y', 'y', 'z', 'z'},
-                {'-', '+', '-', '+', '-', '+'}
-        };
         Hit shallowestHit;
         for (int m = 0; m < 6; ++m) {
             if (validHits[m]) {
@@ -213,8 +206,8 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
                     shallowestHit = h[m];
                     mi.normal_to_cell = planeNormals[m];
                     // store the entered face information
-                    enteredFaceAxis = enteredFace[0][m];
-                    enteredFacePositive = enteredFace[1][m];
+                    enteredFaceAxis = m / 2;
+                    enteredFacePositive = m % 2;
                 }
             }
         }
@@ -223,25 +216,19 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
     }
 
     // compute the initial values for marching info
-    getGridCellIndex(hitPoint, mi.i, mi.j, mi.k);
-    int next_i = mi.i + (mi.sign_x + 1) / 2;
-    int next_j = mi.j + (mi.sign_y + 1) / 2;
-    int next_k = mi.k + (mi.sign_z + 1) / 2;
-    float next_x = _bbMin.x() + next_i * _stepX;
-    float next_y = _bbMin.y() + next_j * _stepY;
-    float next_z = _bbMin.z() + next_k * _stepZ;
-    mi.t_next_x = (next_x - r.getOrigin().x()) / r.getDirection().x();
-    mi.t_next_y = (next_y - r.getOrigin().y()) / r.getDirection().y();
-    mi.t_next_z = (next_z - r.getOrigin().z()) / r.getDirection().z();
+    getGridCellIndex(hitPoint, mi.index);
+    for (int i = 0; i < 3; ++i) {
+        int nextIndex = mi.index[i] + (mi.sign[i] + 1) / 2;
+        float nextPos = _bbMin[i] + nextIndex * _step[i];
+        mi.t_next[i] = (nextPos - r.getOrigin()[i]) / r.getDirection()[i];
+    }
 
     // add help faces
     if (mi.hit)
-        _addEnteredCell(mi.i, mi.j, mi.k, enteredFaceAxis, enteredFacePositive);
+        _addEnteredCell(mi.index[0], mi.index[1], mi.index[2], enteredFaceAxis, enteredFacePositive);
 }
 
-void Grid::_addEnteredCell(int i, int j, int k, char axis, char positive) {
-    assert(axis); assert(positive);
-
+void Grid::_addEnteredCell(int i, int j, int k, int index, int positive) {
     if (i < 0 || i >= _nx ||
         j < 0 || j >= _ny ||
         k < 0 || k >= _nz)
@@ -249,7 +236,7 @@ void Grid::_addEnteredCell(int i, int j, int k, char axis, char positive) {
 
     Vec3f v[8];
     for (unsigned int m = 0; m < 8; ++m) {
-        v[m] = _bbMin + Vec3f(_stepX * (i + ((m & 0x4u) >> 2u)), _stepY * (j + ((m & 0x2u) >> 1u)), _stepZ * (k + (m & 0x1u)));
+        v[m] = _bbMin + _step * Vec3f(i + ((m & 0x4u) >> 2u), j + ((m & 0x2u) >> 1u), k + (m & 0x1u));
     }
     Vec3f n[6] = { Vec3f(-1.f, 0.f, 0.f), // left side
                    Vec3f(-1.f, 0.f, 0.f), // right side
@@ -266,78 +253,40 @@ void Grid::_addEnteredCell(int i, int j, int k, char axis, char positive) {
     }
 
     // enter side
-    int m = 0;
-    switch (axis) {
-        case 'x':
-            m = 0; break;
-        case 'y':
-            m = 2; break;
-        case 'z':
-            m = 4; break;
-        default:
-            assert(0);
-    }
-    if (positive == '+')
-        ++m;
+    int m = index * 2 + positive;
     RayTree::AddEnteredFace(v[_sideIndex[m][0]], v[_sideIndex[m][1]], v[_sideIndex[m][2]], v[_sideIndex[m][3]],
                             n[m], _getCellMaterial(_crtColorIndex % SchemaColorNumber));
     ++_crtColorIndex;
 }
 
 void Grid::_nextCell(MarchingInfo &mi) {
-    char smallestTAxis;
-    if (mi.t_next_x < mi.t_next_y) {
-        if (mi.t_next_x < mi.t_next_z) {
-            // t_next_x is the smallest t_next
-            smallestTAxis = 'x';
-        } else {
-            // t_next_z is the smallest t_next
-            smallestTAxis = 'z';
+    int smallestIndex = -1;
+    float smallestT = std::numeric_limits<float>::max();
+    for (int m = 0; m < 3; ++m) {
+        if (mi.t_next[m] >= mi.tmin && mi.t_next[m] < smallestT) {
+            smallestT = mi.t_next[m];
+            smallestIndex = m;
         }
-    } else if (mi.t_next_y < mi.t_next_z) {
-        // t_next_y is the smallest t_next
-        smallestTAxis = 'y';
-    } else {
-        // t_next_z is the smallest t_next
-        smallestTAxis = 'z';
     }
-    char enteredFacePositives [2] = { '+', '-' };
-    char enteredFacePositive = 0;
-    switch (smallestTAxis) {
-        case 'x':
-            mi.i += mi.sign_x;
-            mi.tmin = mi.t_next_x;
-            mi.t_next_x += mi.d_tx;
-            mi.normal_to_cell = Vec3f(1.f, 0.f, 0.f) * mi.sign_x;
-            enteredFacePositive = enteredFacePositives[(mi.sign_x + 1) / 2];
-            break;
-        case 'y':
-            mi.j += mi.sign_y;
-            mi.tmin = mi.t_next_y;
-            mi.t_next_y += mi.d_ty;
-            mi.normal_to_cell = Vec3f(0.f, 1.f, 0.f) * mi.sign_y;
-            enteredFacePositive = enteredFacePositives[(mi.sign_y + 1) / 2];
-            break;
-        case 'z':
-            mi.k += mi.sign_z;
-            mi.tmin = mi.t_next_z;
-            mi.t_next_z += mi.d_tz;
-            mi.normal_to_cell = Vec3f(0.f, 0.f, 1.f) * mi.sign_z;
-            enteredFacePositive = enteredFacePositives[(mi.sign_z + 1) / 2];
-            break;
-    }
-    _addEnteredCell(mi.i, mi.j, mi.k, smallestTAxis, enteredFacePositive);
+
+    Vec3f normals[3] = { Vec3f(1.f, 0.f, 0.f), Vec3f(0.f, 1.f, 0.f), Vec3f(0.f, 0.f, 1.f) };
+    mi.index[smallestIndex] += mi.sign[smallestIndex];
+    mi.tmin = mi.t_next[smallestIndex];
+    mi.t_next[smallestIndex] += mi.d_t[smallestIndex];
+    mi.normal_to_cell = normals[smallestIndex] * mi.sign[smallestIndex];
+    int enteredFacePositive = (1 - mi.sign[smallestIndex]) / 2;
+
+    _addEnteredCell(mi.index[0], mi.index[1], mi.index[2], smallestIndex, enteredFacePositive);
 }
 
 Material *Grid::_getCellMaterial(int index) const {
     return const_cast<PhongMaterial*>(_materialSchema.data()) + index;
 }
 
-void Grid::getGridCellIndex(const Vec3f &p, int &i, int &j, int &k) {
-    float fi = (p.x() - _bbMin.x()) / _stepX;
-    float fj = (p.y() - _bbMin.y()) / _stepY;
-    float fk = (p.z() - _bbMin.z()) / _stepZ;
-    i = std::max(0, std::min(int(floorf(fi)), _nx - 1));
-    j = std::max(0, std::min(int(floorf(fj)), _ny - 1));
-    k = std::max(0, std::min(int(floorf(fk)), _nz - 1));
+void Grid::getGridCellIndex(const Vec3f &p, int index[3]) {
+    int n[3] = { _nx, _ny, _nz };
+    for (int i = 0; i < 3; ++i) {
+        float fi = (p[i] - _bbMin[i]) / _step[i];
+        index[i] = std::max(0, std::min(int(floorf(fi)), n[i] - 1));
+    }
 }

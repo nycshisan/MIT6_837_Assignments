@@ -10,8 +10,6 @@
 #include "vectors.h"
 
 class Sphere : public Object3D {
-    constexpr static float _err = 1e-4;
-
     Vec3f _center;
     float _radius;
 

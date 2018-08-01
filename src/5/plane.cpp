@@ -9,7 +9,7 @@
 #include "hit.h"
 #include "material.h"
 
-static float _err = 1e-3f;
+static float _err = 1e-5f;
 
 Plane::Plane(const Vec3f &normal, float offset, Material *m) {
     _type = ObjectType::PlaneObject;

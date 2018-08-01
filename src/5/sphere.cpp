@@ -10,7 +10,7 @@
 #include "material.h"
 #include "boundingbox.h"
 
-static float _err = 1e-4f;
+static float _err = 1e-5f;
 
 Sphere::Sphere(const Vec3f &center, float radius, Material *material) {
     _type = ObjectType::SphereObject;
@@ -118,14 +118,14 @@ void Sphere::insertIntoGrid(class Grid *g, Matrix *m) {
 
     auto bbMin = g->getBBMin(), bbMax = g->getBBMax();
     int nx, ny, nz; g->getN(nx, ny, nz);
-    float stepX, stepY, stepZ; g->getStep(stepX, stepY, stepZ);
-    float gridDiagLen = Vec3f(stepX, stepY, stepZ).Length() / 2.f;
+    auto step = g->getStep();
+    float gridDiagLen = step.Length() / 2.f;
 
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < ny; ++j) {
             for (int k = 0; k < nz; ++k) {
                 float x = i + 0.5f, y = j + 0.5f, z = k + 0.5f;
-                Vec3f gridCenter = bbMin + Vec3f(x * stepX, y * stepY, z * stepZ);
+                Vec3f gridCenter = bbMin + step * Vec3f(x, y, z);
                 float dist = (gridCenter - _center).Length();
                 if (dist < _radius + gridDiagLen + _err)
                     g->cells[i][j][k].emplace_back(this);

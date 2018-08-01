@@ -8,7 +8,7 @@
 
 #include "rayTree.h"
 
-static float _err = 1e-3f;
+static float _err = 1e-5f;
 
 RayTracer::RayTracer(const std::shared_ptr<SceneParser> &scParser, const shared_ptr<CommandLineArgumentParser> &cmdlParser) {
     _sceneParser = scParser;
@@ -119,6 +119,8 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
             }
         }
     } else {
+        // add help line
+        RayTree::SetMainSegment(ray, 0, INFINITY);
         color = _bgColor;
     }
 

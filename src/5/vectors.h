@@ -40,8 +40,11 @@ public:
   void Get(float &d0, float &d1) const {
     d0 = data[0];
     d1 = data[1]; }
-  float operator[](int i) const { 
+  float& operator[](int i) {
     assert (i >= 0 && i < 2); 
+    return data[i]; }
+  float operator[](int i) const {
+    assert (i >= 0 && i < 2);
     return data[i]; }
   float x() const { return data[0]; }
   float y() const { return data[1]; }
@@ -158,8 +161,11 @@ public:
   const float *GetData() const {
     return data;
   }
-  float operator[](int i) const { 
+  float& operator[](int i) {
     assert (i >= 0 && i < 3); 
+    return data[i]; }
+  float operator[](int i) const {
+    assert (i >= 0 && i < 3);
     return data[i]; }
   float x() const { return data[0]; }
   float y() const { return data[1]; }
@@ -364,8 +370,11 @@ public:
     d1 = data[1];
     d2 = data[2];
     d3 = data[3]; }
-  float operator[](int i) const { 
-    assert (i >= 0 && i < 4); 
+  float& operator[](int i) {
+    assert (i >= 0 && i < 4);
+    return data[i]; }
+  float operator[](int i) const {
+    assert (i >= 0 && i < 4);
     return data[i]; }
   float x() const { return data[0]; }
   float y() const { return data[1]; }

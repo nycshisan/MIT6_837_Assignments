@@ -68,6 +68,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
                mi.index[1] >= 0 && mi.index[1] < _ny &&
                mi.index[2] >= 0 && mi.index[2] < _nz) {
             if (!cells[mi.index[0]][mi.index[1]][mi.index[2]].empty()) {
+                // hit an opaque cell
                 mi.hit = true;
                 if (!firstHit) {
                     tHit = mi.tmin;
@@ -141,6 +142,7 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
     const auto &startPoint = r.pointAtParameter(tmin);
 
     Vec3f hitPoint;
+    bool inBB = false;
     // store the entered face
     int enteredFaceAxis = -1, enteredFacePositive = 0;
 
@@ -149,6 +151,7 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
         startPoint.z() > _bbMin.z() && startPoint.z() < _bbMax.z()) {
         // inside the box
         mi.hit = true;
+        inBB = true;
         hitPoint = startPoint;
     } else {
         // outside the box
@@ -223,6 +226,8 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
         mi.t_next[i] = (nextPos - r.getOrigin()[i]) / r.getDirection()[i];
     }
 
+
+
     // add help faces
     if (mi.hit)
         _addEnteredCell(mi.index[0], mi.index[1], mi.index[2], enteredFaceAxis, enteredFacePositive);
@@ -253,9 +258,12 @@ void Grid::_addEnteredCell(int i, int j, int k, int index, int positive) {
     }
 
     // enter side
-    int m = index * 2 + positive;
-    RayTree::AddEnteredFace(v[_sideIndex[m][0]], v[_sideIndex[m][1]], v[_sideIndex[m][2]], v[_sideIndex[m][3]],
-                            n[m], _getCellMaterial(_crtColorIndex % SchemaColorNumber));
+    if (index != -1) {
+        // inside the bb
+        int m = index * 2 + positive;
+        RayTree::AddEnteredFace(v[_sideIndex[m][0]], v[_sideIndex[m][1]], v[_sideIndex[m][2]], v[_sideIndex[m][3]],
+                                n[m], _getCellMaterial(_crtColorIndex % SchemaColorNumber));
+    }
     ++_crtColorIndex;
 }
 

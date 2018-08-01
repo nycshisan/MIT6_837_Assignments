@@ -6,11 +6,25 @@
 
 #include <cmath>
 
+#include "hit.h"
+#include "material.h"
+
 static float _err = 1e-3f;
 
 Plane::Plane(const Vec3f &normal, float offset, Material *m) {
+    _type = ObjectType::PlaneObject;
+
     _normal = normal;
     _offset = offset;
+    _m = m;
+}
+
+Plane::Plane(const Vec3f &v0, const Vec3f &v1, const Vec3f &v2, Material *m) {
+    _type = ObjectType::PlaneObject;
+
+    Vec3f::Cross3(_normal, v1 - v0, v2 - v1);
+    _normal.Normalize();
+    _offset = _normal.Dot3(v0);
     _m = m;
 }
 
@@ -22,19 +36,12 @@ bool Plane::intersect(const Ray &r, Hit &h, float tmin) {
         return false;
     }
     float t = (_offset - _normal.Dot3(r.getOrigin())) / nRd;
-    hit.set(t, _m, _normal, r, Hit::ObjectType::Plane);
+    hit.set(t, _m, _normal, r, ObjectType::PlaneObject);
     if (t >= tmin) {
         h = hit;
         return true;
     }
     return false;
-}
-
-Plane::Plane(const Vec3f &v0, const Vec3f &v1, const Vec3f &v2, Material *m) {
-    Vec3f::Cross3(_normal, v1 - v0, v2 - v1);
-    _normal.Normalize();
-    _offset = _normal.Dot3(v0);
-    _m = m;
 }
 
 void Plane::paint() {

@@ -41,7 +41,7 @@ protected:
 
 class PhongMaterial : public Material {
     Vec3f _specularColor, _reflectiveColor, _transparentColor;
-    float _exponent, _indexOfRefraction;
+    float _exponent = 0.f, _indexOfRefraction = 1.f;
 
 public:
     PhongMaterial() = default;

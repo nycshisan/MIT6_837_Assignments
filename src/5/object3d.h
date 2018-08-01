@@ -9,23 +9,33 @@
 
 #include <OpenGL/gl.h>
 
-#include "ray.h"
-#include "hit.h"
-#include "material.h"
-#include "boundingbox.h"
+#include "vectors.h"
+#include "matrix.h"
 
 class Grid;
+class Ray;
+class Hit;
+class Material;
+class BoundingBox;
+
+enum ObjectType {
+    SphereObject, PlaneObject, TriangleObject, GridObject, GroupObject
+};
 
 class Object3D {
 protected:
     Material *_m = nullptr;
-    std::shared_ptr<BoundingBox> _boundingBox;
+    std::shared_ptr<BoundingBox> _bb;
+
+    ObjectType _type;
 
 public:
     virtual bool intersect(const Ray &r, Hit &h, float tmin) = 0;
     virtual void paint() = 0;
 
-    std::shared_ptr<BoundingBox> getBoundingBox() { return _boundingBox; }
+    ObjectType getObjectType() const { return _type; }
+    std::shared_ptr<BoundingBox> getBoundingBox() const { return _bb; }
+
     virtual void insertIntoGrid(Grid *g, Matrix *m);
 };
 

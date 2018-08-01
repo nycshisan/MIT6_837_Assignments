@@ -17,6 +17,10 @@ public:
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
     void paint() override;
+
+    void insertIntoGrid(Grid *g, Matrix *m) override;
+
+    static BoundingBox TransformBoundingBox(const Object3D &object, const Matrix &m);
 };
 
 #endif //ASSIGNMENTS_TRANSFORM_H

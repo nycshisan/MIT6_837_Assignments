@@ -7,18 +7,21 @@
 #include <cmath>
 
 #include "grid.h"
-#include "vectors.h"
+#include "material.h"
+#include "boundingbox.h"
 
 static float _err = 1e-4f;
 
 Sphere::Sphere(const Vec3f &center, float radius, Material *material) {
+    _type = ObjectType::SphereObject;
+
     _center = center;
     _radius = radius;
     _m = material;
 
     Vec3f boundingRadius(radius, radius, radius);
     Vec3f boundingMin = center - boundingRadius, boundingMax = center + boundingRadius;
-    _boundingBox = std::make_shared<BoundingBox>(boundingMin, boundingMax);
+    _bb = std::make_shared<BoundingBox>(boundingMin, boundingMax);
 }
 
 bool Sphere::intersect(const Ray &r, Hit &h, float tmin) {
@@ -48,7 +51,7 @@ bool Sphere::intersect(const Ray &r, Hit &h, float tmin) {
     auto intersection = r.pointAtParameter(t);
     auto normal = intersection - _center;
     normal.Normalize();
-    h.set(t, _m, normal, r, Hit::ObjectType::Sphere);
+    h.set(t, _m, normal, r, ObjectType::SphereObject);
     return true;
 }
 
@@ -107,11 +110,17 @@ void Sphere::getXYZBySphereCoord(float theta, float phi, float &x, float &y, flo
     z = -(rsint * sinf(theta)) + _center.z();
 }
 
-void Sphere::insertIntoGrid(Grid *g, Matrix *m) {
+void Sphere::insertIntoGrid(class Grid *g, Matrix *m) {
+    if (m != nullptr) {
+        Object3D::insertIntoGrid(g, m);
+        return;
+    }
+
     auto bbMin = g->getBBMin(), bbMax = g->getBBMax();
     int nx, ny, nz; g->getN(nx, ny, nz);
     float stepX, stepY, stepZ; g->getStep(stepX, stepY, stepZ);
     float gridDiagLen = Vec3f(stepX, stepY, stepZ).Length() / 2.f;
+
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < ny; ++j) {
             for (int k = 0; k < nz; ++k) {
@@ -119,7 +128,7 @@ void Sphere::insertIntoGrid(Grid *g, Matrix *m) {
                 Vec3f gridCenter = bbMin + Vec3f(x * stepX, y * stepY, z * stepZ);
                 float dist = (gridCenter - _center).Length();
                 if (dist < _radius + gridDiagLen + _err)
-                    g->occupation[i][j][k].emplace_back(this);
+                    g->cells[i][j][k].emplace_back(this);
             }
         }
     }

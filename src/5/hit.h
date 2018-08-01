@@ -5,6 +5,7 @@
 
 #include "vectors.h"
 #include "ray.h"
+#include "object3d.h"
 
 class Material;
 
@@ -25,10 +26,6 @@ public:
     objectType = h.objectType;
   }
   ~Hit() {}
-
-  enum ObjectType {
-      Sphere, Plane, Triangle, Grid
-  };
 
   // ACCESSORS
   float getT() const { return t; }

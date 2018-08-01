@@ -4,7 +4,14 @@
 
 #include "transform.h"
 
+#include "boundingbox.h"
+#include "ray.h"
+#include "hit.h"
+#include "triangle.h"
+
 Transform::Transform(const Matrix &mat, Object3D *object) {
+    _type = object->getObjectType();
+
     _mat = mat;
     _invMat = _mat;
     int r = _invMat.Inverse();
@@ -13,24 +20,7 @@ Transform::Transform(const Matrix &mat, Object3D *object) {
     _invTpMat.Transpose();
     _object = object;
 
-    auto objectBoundingBox = object->getBoundingBox();
-    Vec3f objectBoundingMinMax[2] = { objectBoundingBox->getMin(), objectBoundingBox->getMax() };
-
-    Vec3f boundingVertexes[8];
-
-    for (unsigned i = 0; i < 8; ++i) {
-        auto x = objectBoundingMinMax[i & 0x1u].x();
-        auto y = objectBoundingMinMax[(i & 0x2u) >> 1u].y();
-        auto z = objectBoundingMinMax[(i & 0x4u) >> 2u].z();
-        Vec3f objectBoundingVertex(x, y, z);
-        _mat.Transform(objectBoundingVertex);
-        boundingVertexes[i] = objectBoundingVertex;
-    }
-
-    _boundingBox = std::make_shared<BoundingBox>(Vec3f(), Vec3f());
-    for (const auto &boundingVertex : boundingVertexes) {
-        _boundingBox->Extend(boundingVertex);
-    }
+    _bb = std::shared_ptr<BoundingBox>::make_shared(TransformBoundingBox(*_object, _mat));
 }
 
 bool Transform::intersect(const Ray &r, Hit &h, float tmin) {
@@ -76,4 +66,50 @@ void Transform::paint() {
     delete[] glMatrix;
     _object->paint();
     glPopMatrix();
+}
+
+void Transform::insertIntoGrid(Grid *g, Matrix *m) {
+    Matrix thisM = _mat;
+    if (m != nullptr) {
+        thisM = *m * thisM;
+    }
+    _object->insertIntoGrid(g, &thisM);
+
+}
+
+BoundingBox Transform::TransformBoundingBox(const Object3D &object, const Matrix &m) {
+    float maxf = std::numeric_limits<float>::max(), minf = std::numeric_limits<float>::lowest();
+    BoundingBox transformedBB(Vec3f(maxf, maxf, maxf), Vec3f(minf, minf, minf));
+
+    if (object.getObjectType() != ObjectType::TriangleObject) {
+        Vec3f bbMinMax[2] = {object.getBoundingBox()->getMin(), object.getBoundingBox()->getMax()};
+
+        Vec3f bbVertexes[8];
+        for (unsigned i = 0; i < 8; ++i) {
+            auto x = bbMinMax[i & 0x1u].x();
+            auto y = bbMinMax[(i & 0x2u) >> 1u].y();
+            auto z = bbMinMax[(i & 0x4u) >> 2u].z();
+            Vec3f bbVertex(x, y, z);
+            m.Transform(bbVertex);
+            bbVertexes[i] = bbVertex;
+        }
+
+        for (const auto &bbVertex : bbVertexes) {
+            transformedBB.Extend(bbVertex);
+        }
+    } else {
+        Vec3f bbVertexes[3];
+        const auto &tri = dynamic_cast<const Triangle &>(object);
+
+        for (int i = 0; i < 3; ++i) {
+            bbVertexes[i] = tri.getVertex(i);
+            m.Transform(bbVertexes[i]);
+        }
+
+        for (const auto &bbVertex : bbVertexes) {
+            transformedBB.Extend(bbVertex);
+        }
+    }
+
+    return transformedBB;
 }

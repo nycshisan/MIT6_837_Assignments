@@ -4,24 +4,28 @@
 
 #include "triangle.h"
 
+#include "grid.h"
+#include "boundingbox.h"
+
 static float _err = 1e-3f;
 
 Triangle::Triangle(const Vec3f &v0, const Vec3f &v1, const Vec3f &v2, Material *m) : _plane(v0, v1, v2, m) {
+    _type = ObjectType::TriangleObject;
+
     _v0 = v0;
     _v1 = v1;
     _v2 = v2;
     _m = m;
 
-    _barycenter = (v0 + v1 + v2) * (1.f / 3.f);
-
     Vec3f v0v1 = v1 - v0, v1v2 = v2 - v1;
     Vec3f::Cross3(_norm, v0v1, v1v2);
     _norm.Normalize();
 
-    _boundingBox = std::make_shared<BoundingBox>(Vec3f(), Vec3f());
-    _boundingBox->Extend(v0);
-    _boundingBox->Extend(v1);
-    _boundingBox->Extend(v2);
+    float maxf = std::numeric_limits<float>::max(), minf = std::numeric_limits<float>::lowest();
+    _bb = std::make_shared<BoundingBox>(Vec3f(maxf, maxf, maxf), Vec3f(minf, minf, minf));
+    _bb->Extend(v0);
+    _bb->Extend(v1);
+    _bb->Extend(v2);
 }
 
 bool Triangle::intersect(const Ray &r, Hit &h, float tmin) {
@@ -71,4 +75,22 @@ void Triangle::paint() {
     _v2.Get(x, y, z);
     glVertex3f(x, y, z);
     glEnd();
+}
+
+void Triangle::insertIntoGrid(class Grid *g, Matrix *m) {
+    if (m != nullptr) {
+        Object3D::insertIntoGrid(g, m);
+        return;
+    }
+
+    int iMin, jMin, kMin, iMax, jMax, kMax;
+    g->getGridCellIndex(_bb->getMin(), iMin, jMin, kMin);
+    g->getGridCellIndex(_bb->getMax(), iMax, jMax, kMax);
+    for (int i = iMin; i <= iMax; ++i) {
+        for (int j = jMin; j <= jMax; ++j) {
+            for (int k = kMin; k <= kMax; ++k) {
+                g->cells[i][j][k].emplace_back(this);
+            }
+        }
+    }
 }

@@ -11,7 +11,7 @@
 #include "vectors.h"
 
 class Triangle : public Object3D {
-    Vec3f _v0, _v1, _v2, _norm, _barycenter;
+    Vec3f _v0, _v1, _v2, _norm;
     Plane _plane;
 
 public:
@@ -20,7 +20,16 @@ public:
     bool intersect(const Ray &r, Hit &h, float tmin) override;
     void paint() override;
 
-    virtual void insertIntoGrid(Grid *g, Matrix *m);
+    void insertIntoGrid(Grid *g, Matrix *m) override;
+
+    Vec3f getVertex(int index) const {
+        switch (index) {
+            case 0: return _v0;
+            case 1: return _v1;
+            case 2: return _v2;
+            default: assert(0); return Vec3f();
+        }
+    }
 };
 
 #endif //ASSIGNMENTS_TRIANGLE_H

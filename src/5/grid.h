@@ -9,6 +9,7 @@
 #include <array>
 
 #include "object3d.h"
+#include "material.h"
 
 class MarchingInfo {
 public:
@@ -47,7 +48,7 @@ class Grid : public Object3D {
     std::array<PhongMaterial, SchemaColorNumber> _materialSchema;
 
 public:
-    std::vector<std::vector<std::vector<std::vector<Object3D*>>>> occupation;
+    std::vector<std::vector<std::vector<std::vector<Object3D*>>>> cells;
 
     Grid(const std::shared_ptr<BoundingBox> &bb, int nx, int ny, int nz);
     bool intersect(const Ray &r, Hit &h, float tmin) override;
@@ -59,6 +60,7 @@ public:
     void getStep(float &x, float &y, float &z) {
         x = _stepX; y = _stepY; z = _stepZ;
     }
+    void getGridCellIndex(const Vec3f &p, int &i, int &j, int&k);
 
     void refreshColorSchema() { _crtColorIndex = 0; }
 };

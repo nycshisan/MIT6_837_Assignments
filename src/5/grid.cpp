@@ -11,26 +11,30 @@
 #include "plane.h"
 #include "rayTree.h"
 #include "hsl.h"
+#include "boundingbox.h"
 
 static float _err = 1e-3f;
+constexpr int Grid::SchemaColorNumber;
 
 PhongMaterial Grid::GridMaterial(Vec3f(1.f, 1.f, 1.f), Vec3f(), 0.f, Vec3f(), Vec3f(), 1.f);
 
 Grid::Grid(const std::shared_ptr<BoundingBox> &bb, int nx, int ny, int nz) {
-    _boundingBox = bb;
-    occupation.resize(static_cast<unsigned long>(nx));
+    _type = ObjectType::GridObject;
+
+    _bb = bb;
+    cells.resize(static_cast<unsigned long>(nx));
     for (int i = 0; i < nx; ++i) {
-        occupation[i].resize(static_cast<unsigned long>(ny));
+        cells[i].resize(static_cast<unsigned long>(ny));
         for (int j = 0; j < ny; ++j) {
-            occupation[i][j].resize(static_cast<unsigned long>(nz));
+            cells[i][j].resize(static_cast<unsigned long>(nz));
             for (int k = 0; k < nz; ++k) {
-                occupation[i][j][k].clear();
+                cells[i][j][k].clear();
             }
         }
     }
     _nx = nx; _ny = ny; _nz = nz;
 
-    _bbMin = _boundingBox->getMin(); _bbMax = _boundingBox->getMax();
+    _bbMin = _bb->getMin(); _bbMax = _bb->getMax();
     auto bbStride = _bbMax - _bbMin;
     _stepX = bbStride.x() / _nx; _stepY = bbStride.y() / _ny; _stepZ = bbStride.z() / _nz;
 
@@ -63,12 +67,12 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
         while (mi.i >= 0 && mi.i < _nx &&
                mi.j >= 0 && mi.j < _ny &&
                mi.k >= 0 && mi.k < _nz) {
-            if (!occupation[mi.i][mi.j][mi.k].empty()) {
+            if (!cells[mi.i][mi.j][mi.k].empty()) {
                 mi.hit = true;
                 if (!firstHit) {
                     tHit = mi.tmin;
                     nHit = mi.normal_to_cell;
-                    nObjects = static_cast<int>(occupation[mi.i][mi.j][mi.k].size());
+                    nObjects = static_cast<int>(cells[mi.i][mi.j][mi.k].size());
                     firstHit = true;
                 }
             }
@@ -77,7 +81,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
 
         if (mi.hit) {
             nHit.Negate();
-            h.set(tHit, _getCellMaterial(nObjects - 1), nHit, r, Hit::ObjectType::Grid);
+            h.set(tHit, _getCellMaterial(std::min(nObjects, SchemaColorNumber) - 1), nHit, r, ObjectType::GridObject);
             return true;
         }
     }
@@ -85,12 +89,13 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
 }
 
 void Grid::paint() {
-    _m->glSetMaterial();
-
     for (unsigned i = 0; i < _nx; ++i) {
         for (unsigned j = 0; j < _ny; ++j) {
             for (unsigned k = 0; k < _nz; ++k) {
-                if (!occupation[i][j][k].empty()) {
+                if (!cells[i][j][k].empty()) {
+                    auto nObjects = static_cast<int>(cells[i][j][k].size());
+                    _materialSchema[std::min(nObjects, SchemaColorNumber) - 1].glSetMaterial();
+
                     Vec3f v[8];
                     for (unsigned int m = 0; m < 8; ++m) {
                         v[m] = _bbMin + Vec3f(_stepX * (i + ((m & 0x4u) >> 2u)), _stepY * (j + ((m & 0x2u) >> 1u)), _stepZ * (k + (m & 0x1u)));
@@ -165,11 +170,11 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
         Hit h[6];
         bool validHits[6] = { false, false, false, false, false, false };
         Plane planes[6] = { Plane(v[0], v[1], v[3], _m), // left side
-                            Plane(v[4], v[5], v[7], _m), // right side
-                            Plane(v[0], v[4], v[5], _m), // down side
-                            Plane(v[2], v[6], v[7], _m), // up side
-                            Plane(v[0], v[4], v[6], _m), // back side
-                            Plane(v[1], v[5], v[7], _m), // forward side
+                                  Plane(v[4], v[5], v[7], _m), // right side
+                                  Plane(v[0], v[4], v[5], _m), // down side
+                                  Plane(v[2], v[6], v[7], _m), // up side
+                                  Plane(v[0], v[4], v[6], _m), // back side
+                                  Plane(v[1], v[5], v[7], _m), // forward side
         };
         Vec3f planeNormals[6] = { Vec3f(1.f, 0.f, 0.f), // left side
                                   Vec3f(-1.f, 0.f, 0.f), // right side
@@ -218,12 +223,7 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
     }
 
     // compute the initial values for marching info
-    float fi = (hitPoint.x() - _bbMin.x()) / _stepX;
-    float fj = (hitPoint.y() - _bbMin.y()) / _stepY;
-    float fk = (hitPoint.z() - _bbMin.z()) / _stepZ;
-    mi.i = std::max(0, std::min(int(floorf(fi)), _nx - 1));
-    mi.j = std::max(0, std::min(int(floorf(fj)), _ny - 1));
-    mi.k = std::max(0, std::min(int(floorf(fk)), _nz - 1));
+    getGridCellIndex(hitPoint, mi.i, mi.j, mi.k);
     int next_i = mi.i + (mi.sign_x + 1) / 2;
     int next_j = mi.j + (mi.sign_y + 1) / 2;
     int next_k = mi.k + (mi.sign_z + 1) / 2;
@@ -331,4 +331,13 @@ void Grid::_nextCell(MarchingInfo &mi) {
 
 Material *Grid::_getCellMaterial(int index) const {
     return const_cast<PhongMaterial*>(_materialSchema.data()) + index;
+}
+
+void Grid::getGridCellIndex(const Vec3f &p, int &i, int &j, int &k) {
+    float fi = (p.x() - _bbMin.x()) / _stepX;
+    float fj = (p.y() - _bbMin.y()) / _stepY;
+    float fk = (p.z() - _bbMin.z()) / _stepZ;
+    i = std::max(0, std::min(int(floorf(fi)), _nx - 1));
+    j = std::max(0, std::min(int(floorf(fj)), _ny - 1));
+    k = std::max(0, std::min(int(floorf(fk)), _nz - 1));
 }

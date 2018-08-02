@@ -32,7 +32,7 @@ class Grid : public Object3D {
     void _addEnteredCell(int i, int j, int k, int index, int positive);
 
     void _nextCell(MarchingInfo &info);
-    Material *_getCellMaterial(int index) const;
+    PhongMaterial* _getCellMaterial(int index) const;
 
     int _sideIndex[6][4] = {
         {0, 1, 3, 2},
@@ -45,7 +45,7 @@ class Grid : public Object3D {
 
     static constexpr int SchemaColorNumber = 17;
     int _crtColorIndex = 0;
-    std::array<PhongMaterial, SchemaColorNumber> _materialSchema;
+    PhongMaterial _materialSchema[SchemaColorNumber];
 
 public:
     std::vector<std::vector<std::vector<std::vector<Object3D*>>>> cells;

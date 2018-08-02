@@ -67,8 +67,8 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
         if (bounces == 0)
             RayTree::SetMainSegment(ray, 0, mainT);
 
-        color = _ambient * m->getDiffuseColor();
         auto intersection = hit.getIntersectionPoint();
+        color = _ambient * m->getDiffuseColor(intersection);
         for (int i = 0; i < _nLights; ++i) {
             Vec3f dirToLight, lightColor;
             float distToLight;
@@ -91,7 +91,7 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
 
 
         // handle reflection
-        auto reflectColor = m->getReflectiveColor();
+        auto reflectColor = m->getReflectiveColor(intersection);
         if (reflectColor.Length() > _err) {
             Hit reflectHit;
             Ray reflectRay(intersection, _mirrorDirection(hit.getNormal(), ray.getDirection()));
@@ -102,8 +102,8 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
         }
 
         // handle refraction
-        auto transparentColor = m->getTransparentColor();
-        auto materialIndexOfRefraction = isBackSide ? 1.f : m->getIndexOfRefraction(); // handle ray that goes out of the object
+        auto transparentColor = m->getTransparentColor(intersection);
+        auto materialIndexOfRefraction = isBackSide ? 1.f : m->getIndexOfRefraction(intersection); // handle ray that goes out of the object
         if (transparentColor.Length() > _err) {
             Vec3f transmittedDir;
             auto transmitted = _transmittedDirection(hit.getNormal(), ray.getDirection(), indexOfRefraction,

@@ -50,7 +50,7 @@ void RayTracingStats::PrintStatistics()  {
 
   printf ("********************************************\n");
   printf ("RAY TRACING STATISTICS\n");
-  printf ("  total time                 %ld:%02d:%02d\n",hours,min,secs);
+  printf ("  total time                 %d:%02d:%02d\n",hours,min,secs);
   printf ("  num pixels                 %d (%dx%d)\n", width*height,width,height);
   printf ("  scene bounds               ");
   if (bbox == NULL) printf ("NULL\n"); 

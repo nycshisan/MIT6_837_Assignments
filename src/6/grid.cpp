@@ -287,8 +287,8 @@ void Grid::_nextCell(MarchingInfo &mi) {
     _addEnteredCell(mi.index[0], mi.index[1], mi.index[2], smallestIndex, enteredFacePositive);
 }
 
-Material *Grid::_getCellMaterial(int index) const {
-    return const_cast<PhongMaterial*>(_materialSchema.data()) + index;
+PhongMaterial* Grid::_getCellMaterial(int index) const {
+    return const_cast<PhongMaterial*>(_materialSchema + index);
 }
 
 void Grid::getGridCellIndex(const Vec3f &p, int index[3]) {

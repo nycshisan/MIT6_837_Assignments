@@ -23,7 +23,8 @@ void traceRayFunc(float x, float y) {
     Vec2f p(x, y);
     auto ray = camera->generateRay(p);
     Hit hit;
-    RTracer->getGrid()->refreshColorSchema();
+    if (CmdlParser->visualize_grid)
+        RTracer->getGrid()->refreshColorSchema();
     RTracer->traceRay(ray, camera->getTMin(), 0, 1.f, 1.f, hit);
 }
 

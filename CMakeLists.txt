@@ -4,6 +4,8 @@ project(Assignments)
 set(CMAKE_CXX_STANDARD 11)
 set(OUTPUT_DIR ../bin/)
 
+### A0 ###
+
 add_executable(A0
         src/0/image.cpp
         src/0/image.h
@@ -18,6 +20,8 @@ set_target_properties(A0 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A0"
         OUTPUT_NAME "ifs")
 
+### A1 ###
+
 add_executable(A1
         src/1/main.cpp
         src/1/matrix.cpp
@@ -31,6 +35,8 @@ add_executable(A1
 set_target_properties(A1 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A1"
         OUTPUT_NAME "raytracer")
+
+### A2 ###
 
 add_executable(A2
         src/2/main.cpp
@@ -52,6 +58,8 @@ set_target_properties(A2 PROPERTIES
 
 find_package(OpenGL)
 find_package(GLUT)
+
+### A3 ###
 
 add_executable(A3
         src/3/main.cpp
@@ -75,6 +83,8 @@ set_target_properties(A3 PROPERTIES
         OUTPUT_NAME "raytracer")
 
 target_link_libraries(A3 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
+
+### A4 ###
 
 add_executable(A4
         src/4/main.cpp
@@ -101,6 +111,8 @@ set_target_properties(A4 PROPERTIES
 target_link_libraries(A4 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
 
 target_compile_options(A4 PUBLIC "-Wno-deprecated-declarations")
+
+### A5 ###
 
 add_executable(A5
         src/5/main.cpp
@@ -131,3 +143,76 @@ set_target_properties(A5 PROPERTIES
 target_link_libraries(A5 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
 
 target_compile_options(A5 PUBLIC "-Wno-deprecated-declarations")
+
+### A6 ###
+
+add_executable(A6
+        src/6/main.cpp
+        src/6/matrix.cpp
+        src/6/image.cpp
+        src/6/sphere.cpp
+        src/6/raytracer.cpp
+        src/6/camera.cpp
+        src/6/group.cpp
+        src/6/plane.cpp
+        src/6/triangle.cpp
+        src/6/transform.cpp
+        src/6/commandLineArgumentParser.cpp
+        src/6/scene_parser.cpp
+        src/6/light.cpp
+        src/6/glCanvas.cpp
+        src/6/material.cpp
+        src/6/rayTree.cpp
+        src/6/grid.cpp
+        src/6/boundingbox.cpp
+        src/6/object3d.cpp
+        src/6/hsl.cpp
+        src/6/perlin_noise.cpp
+        src/6/raytracing_stats.cpp)
+
+set_target_properties(A6 PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A6"
+        OUTPUT_NAME "raytracer")
+
+target_link_libraries(A6 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
+
+target_compile_options(A6 PUBLIC "-Wno-deprecated-declarations")
+
+### A7 ###
+
+add_executable(A7
+        src/7/main.cpp)
+
+set_target_properties(A7 PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A7"
+        OUTPUT_NAME "raytracer")
+
+target_link_libraries(A7 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
+
+target_compile_options(A7 PUBLIC "-Wno-deprecated-declarations")
+
+### A8 ###
+
+add_executable(A8
+        src/8/main.cpp)
+
+set_target_properties(A8 PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A8"
+        OUTPUT_NAME "raytracer")
+
+target_link_libraries(A8 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
+
+target_compile_options(A8 PUBLIC "-Wno-deprecated-declarations")
+
+### A9 ###
+
+add_executable(A9
+        src/9/main.cpp)
+
+set_target_properties(A9 PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A9"
+        OUTPUT_NAME "raytracer")
+
+target_link_libraries(A9 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
+
+target_compile_options(A9 PUBLIC "-Wno-deprecated-declarations")

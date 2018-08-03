@@ -181,7 +181,31 @@ target_compile_options(A6 PUBLIC "-Wno-deprecated-declarations")
 ### A7 ###
 
 add_executable(A7
-        src/7/main.cpp)
+        src/7/main.cpp
+        src/7/matrix.cpp
+        src/7/image.cpp
+        src/7/sphere.cpp
+        src/7/raytracer.cpp
+        src/7/camera.cpp
+        src/7/group.cpp
+        src/7/plane.cpp
+        src/7/triangle.cpp
+        src/7/transform.cpp
+        src/7/commandLineArgumentParser.cpp
+        src/7/scene_parser.cpp
+        src/7/light.cpp
+        src/7/glCanvas.cpp
+        src/7/material.cpp
+        src/7/rayTree.cpp
+        src/7/grid.cpp
+        src/7/boundingbox.cpp
+        src/7/object3d.cpp
+        src/7/hsl.cpp
+        src/7/perlin_noise.cpp
+        src/7/raytracing_stats.cpp
+        src/7/film.cpp
+        src/7/sample.cpp
+        src/7/filter.cpp)
 
 set_target_properties(A7 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A7"

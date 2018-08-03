@@ -3,7 +3,7 @@
 
 #include "vectors.h"
 
-#include <assert.h>
+#include <cassert>
 
 #define min2(a,b) (((a)<(b))?(a):(b))
 #define max2(a,b) (((a)>(b))?(a):(b))

@@ -12,6 +12,7 @@ void Object3D::insertIntoGrid(Grid *g, Matrix *m) {
     if (m != nullptr && _bb != nullptr) {
         // flatten the transform
         auto *transform = new Transform(*m, this);
+        transform->setFlattened();
         // only handles transformations && discards planes etc.
         auto transformedBB = Transform::TransformBoundingBox(*this, *m);
         int iMin[3], iMax[3];

@@ -12,6 +12,8 @@ class Transform : public Object3D {
     Matrix _mat, _invMat, _invTpMat;
     Object3D *_object;
 
+    bool _flattened = false;
+
 public:
     Transform(const Matrix &mat, Object3D *object);
 
@@ -22,7 +24,9 @@ public:
 
     static BoundingBox TransformBoundingBox(const Object3D &object, const Matrix &m);
 
-    ~Transform() override { delete _object; }
+    void setFlattened() { _flattened = true; }
+
+    ~Transform() override;
 };
 
 #endif //ASSIGNMENTS_TRANSFORM_H

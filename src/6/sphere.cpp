@@ -119,6 +119,8 @@ void Sphere::insertIntoGrid(class Grid *g, Matrix *m) {
         return;
     }
 
+    auto *copy = new Sphere(*this);
+
     auto bbMin = g->getBBMin(), bbMax = g->getBBMax();
     int nx, ny, nz; g->getN(nx, ny, nz);
     auto step = g->getStep();
@@ -131,7 +133,7 @@ void Sphere::insertIntoGrid(class Grid *g, Matrix *m) {
                 Vec3f gridCenter = bbMin + step * Vec3f(x, y, z);
                 float dist = (gridCenter - _center).Length();
                 if (dist < _radius + gridDiagLen + _err)
-                    g->cells[i][j][k].emplace_back(this);
+                    g->cells[i][j][k].emplace_back(copy);
             }
         }
     }

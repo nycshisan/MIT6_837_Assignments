@@ -8,7 +8,7 @@
 #include "boundingbox.h"
 #include "raytracing_stats.h"
 
-static float _err = 1e-5f;
+static float _err = 1e-6f;
 
 Triangle::Triangle(const Vec3f &v0, const Vec3f &v1, const Vec3f &v2, Material *m) : _plane(v0, v1, v2, m) {
     _type = ObjectType::TriangleObject;
@@ -86,13 +86,15 @@ void Triangle::insertIntoGrid(class Grid *g, Matrix *m) {
         return;
     }
 
+    auto *copy = new Triangle(*this);
+
     int iMin[3], iMax[3];
     g->getGridCellIndex(_bb->getMin(), iMin);
     g->getGridCellIndex(_bb->getMax(), iMax);
     for (int i = iMin[0]; i <= iMax[0]; ++i) {
         for (int j = iMin[1]; j <= iMax[1]; ++j) {
             for (int k = iMin[2]; k <= iMax[2]; ++k) {
-                g->cells[i][j][k].emplace_back(this);
+                g->cells[i][j][k].emplace_back(copy);
             }
         }
     }

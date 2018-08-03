@@ -162,6 +162,8 @@ Wood::Wood(Matrix *m, Material *mat1, Material *mat2, int octaves, float frequen
 
 float Wood::_noise(const Vec3f &tsCoord) const {
     float l = tsCoord.x() * tsCoord.x() + tsCoord.z() * tsCoord.z();
-    float c = std::cosf(_freq * std::sqrtf(l) + _ampl * Noise::_noise(tsCoord) + (tsCoord.y() - 4.f) / 3.f);
-    return 1 - std::powf(1 - c, 4);
+    float s = sinf(_freq * sqrtf(l) + _ampl * Noise::_noise(tsCoord) + tsCoord.y() * 0.4f);
+    float sign = s < 0 ? -1.f : 1.f;
+    s = fabsf(s);
+    return sign * (1 - std::powf(1 - s, _freq));
 }

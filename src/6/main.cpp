@@ -50,12 +50,12 @@ void renderFunc() {
     auto *camera = ScParser->getCamera();
     assert(camera != nullptr);
 
-    for (int y = 0; y < CmdlParser->width; ++y) {
-        for (int x = 0; x < CmdlParser->height; ++x) {
-            if (x == 8 && y == 15) {
-
-            }
-            Vec2f p(float(x) / CmdlParser->width, float(y) / CmdlParser->height);
+    for (int y = 0; y < CmdlParser->height; ++y) {
+        for (int x = 0; x < CmdlParser->width; ++x) {
+            float maxImageSize = std::max(CmdlParser->width, CmdlParser->height);
+            float xMargin = (maxImageSize - CmdlParser->width) / 2.f;
+            float yMargin = (maxImageSize - CmdlParser->height) / 2.f;
+            Vec2f p((float(x) + xMargin) / maxImageSize, (float(y) + yMargin) / maxImageSize);
             auto ray = camera->generateRay(p);
             Hit hit;
             auto color = RTracer->traceRay(ray, camera->getTMin(), 0, 1.f, 1.f, hit);

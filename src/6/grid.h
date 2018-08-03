@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <array>
-#include <set>
 
 #include "object3d.h"
 #include "material.h"
@@ -71,6 +70,8 @@ public:
     void refreshColorSchema() { _crtColorIndex = 0; }
 
     void addInfiniteObject(const std::shared_ptr<Object3D> &object) { _infiniteObjects.emplace_back(object); }
+
+    ~Grid() override;
 };
 
 #endif //ASSIGNMENTS_GRID_H

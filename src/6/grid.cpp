@@ -5,9 +5,8 @@
 #include "grid.h"
 
 #include <cmath>
-#include <functional>
+#include <unordered_set>
 
-#include "material.h"
 #include "plane.h"
 #include "rayTree.h"
 #include "hsl.h"
@@ -58,7 +57,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
     RayTracingStats::IncrementNumIntersections();
 
     h = Hit();
-    std::set<Object3D*> visitedObjectsSet;
+    std::unordered_set<Object3D*> visitedObjectsSet;
 
     MarchingInfo mi;
     _initializeRayMarch(mi, r, tmin);
@@ -348,4 +347,18 @@ void Grid::getGridCellIndex(const Vec3f &p, int index[3]) {
         float fi = (p[i] - _bbMin[i]) / _step[i];
         index[i] = std::max(0, std::min(int(floorf(fi)), n[i] - 1));
     }
+}
+
+Grid::~Grid() {
+    std::unordered_set<Object3D*> objects;
+    for (int i = 0; i < _nx; ++i) {
+        for (int j = 0; j < _ny; ++j) {
+            for (int k = 0; k < _nz; ++k) {
+                for (auto *object: cells[i][j][k])
+                    objects.emplace(object);
+            }
+        }
+    }
+    for (auto *object: objects)
+        delete object;
 }

@@ -113,3 +113,8 @@ BoundingBox Transform::TransformBoundingBox(const Object3D &object, const Matrix
 
     return transformedBB;
 }
+
+Transform::~Transform() {
+    if (!_flattened)
+        delete _object;
+}

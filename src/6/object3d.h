@@ -30,6 +30,8 @@ protected:
     ObjectType _type;
 
 public:
+    bool markedInGrid = false;
+
     virtual bool intersect(const Ray &r, Hit &h, float tmin) = 0;
     virtual void paint() = 0;
 
@@ -37,6 +39,8 @@ public:
     std::shared_ptr<BoundingBox> getBoundingBox() const { return _bb; }
 
     virtual void insertIntoGrid(Grid *g, Matrix *m);
+
+    virtual ~Object3D() {};
 };
 
 #endif //ASSIGNMENTS_OBJECT3D_H

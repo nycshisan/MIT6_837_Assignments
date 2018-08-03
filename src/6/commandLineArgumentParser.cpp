@@ -63,6 +63,8 @@ void CommandLineArgumentParser::parse(int argc, char **argv) {
             grid_ny = atoi(argv[i]);
             i++; assert(i < argc);
             grid_nz = atoi(argv[i]);
+        } else if (!strcmp(argv[i],"-stats")) {
+            stats = true;
         } else {
             printf ("whoops error with command line argument %d: '%s'\n",i,argv[i]);
             assert(0);

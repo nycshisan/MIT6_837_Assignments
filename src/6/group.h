@@ -21,6 +21,8 @@ public:
     void paint() override;
 
     void insertIntoGrid(Grid *g, Matrix *m) override;
+
+    ~Group() override;
 };
 
 #endif //ASSIGNMENTS_GROUP_H

@@ -6,6 +6,7 @@
 
 #include "grid.h"
 #include "boundingbox.h"
+#include "raytracing_stats.h"
 
 static float _err = 1e-5f;
 
@@ -29,6 +30,8 @@ Triangle::Triangle(const Vec3f &v0, const Vec3f &v1, const Vec3f &v2, Material *
 }
 
 bool Triangle::intersect(const Ray &r, Hit &h, float tmin) {
+    RayTracingStats::IncrementNumIntersections();
+
     Vec3f c, edge, pv, intersection;
     Hit hit;
     if (_plane.intersect(r, hit, tmin)) {

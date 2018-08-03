@@ -31,12 +31,16 @@ class RayTracer {
 
     std::shared_ptr<Grid> _grid;
 
+    bool _castRay(Ray &ray, Hit &hit, float tmin) const;
+
 public:
     RayTracer(const std::shared_ptr<SceneParser> &scParser, const shared_ptr<CommandLineArgumentParser> &cmdlParser);
 
     Vec3f traceRay(Ray &ray, float tmin, int bounces, float weight, float indexOfRefraction, Hit &hit) const;
 
     Grid *getGrid() { return _grid.get(); }
+
+    BoundingBox *getBoundingBox() { return _group->getBoundingBox().get(); };
 };
 
 #endif //ASSIGNMENTS_RAYTRACER_H

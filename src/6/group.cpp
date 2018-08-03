@@ -52,3 +52,9 @@ void Group::insertIntoGrid(Grid *g, Matrix *m) {
         obj->insertIntoGrid(g, m);
     }
 }
+
+Group::~Group() {
+    for (auto *object: _objs) {
+        delete object;
+    }
+}

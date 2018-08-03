@@ -102,7 +102,6 @@ protected:
 public:
     Noise(Matrix *m, Material *mat1, Material *mat2, int octaves);
 
-
     Vec3f getDiffuseColor(const Vec3f &wsCoord) const override {
       auto tsCoord = _getTextureSpaceCoord(wsCoord);
       return _lerp(_m1->getDiffuseColor(wsCoord), _m2->getDiffuseColor(wsCoord), _clampedNoise(tsCoord));

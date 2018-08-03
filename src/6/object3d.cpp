@@ -18,7 +18,9 @@ void Object3D::insertIntoGrid(Grid *g, Matrix *m) {
         for (int i = iMin[0]; i <= iMax[0]; ++i) {
             for (int j = iMin[1]; j <= iMax[1]; ++j) {
                 for (int k = iMin[2]; k <= iMax[2]; ++k) {
-                    g->cells[i][j][k].emplace_back(this);
+                    // flatten the transform
+                    auto *transform = new Transform(*m, this);
+                    g->cells[i][j][k].emplace_back(transform);
                 }
             }
         }

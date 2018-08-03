@@ -12,12 +12,16 @@
 #include "glCanvas.h"
 #include "camera.h"
 #include "rayTree.h"
+#include "raytracing_stats.h"
 
 std::shared_ptr<CommandLineArgumentParser> CmdlParser;
 std::shared_ptr<SceneParser> ScParser;
 std::shared_ptr<RayTracer> RTracer;
 
 void traceRayFunc(float x, float y) {
+    RayTracingStats::Initialize(CmdlParser->width, CmdlParser->height, RTracer->getBoundingBox(),
+                                CmdlParser->grid_nx, CmdlParser->grid_ny, CmdlParser->grid_nz);
+
     auto *camera = ScParser->getCamera();
     assert(camera != nullptr);
     Vec2f p(x, y);
@@ -26,9 +30,15 @@ void traceRayFunc(float x, float y) {
     if (CmdlParser->visualize_grid)
         RTracer->getGrid()->refreshColorSchema();
     RTracer->traceRay(ray, camera->getTMin(), 0, 1.f, 1.f, hit);
+
+    if (CmdlParser->stats)
+        RayTracingStats::PrintStatistics();
 }
 
 void renderFunc() {
+    RayTracingStats::Initialize(CmdlParser->width, CmdlParser->height, RTracer->getBoundingBox(),
+                                CmdlParser->grid_nx, CmdlParser->grid_ny, CmdlParser->grid_nz);
+
     auto imgColor = Image(CmdlParser->width, CmdlParser->height);
     auto imgNormal = Image(CmdlParser->width, CmdlParser->height);
     auto imgDepth = Image(CmdlParser->width, CmdlParser->height);
@@ -42,6 +52,9 @@ void renderFunc() {
 
     for (int y = 0; y < CmdlParser->width; ++y) {
         for (int x = 0; x < CmdlParser->height; ++x) {
+            if (x == 8 && y == 15) {
+
+            }
             Vec2f p(float(x) / CmdlParser->width, float(y) / CmdlParser->height);
             auto ray = camera->generateRay(p);
             Hit hit;
@@ -80,6 +93,9 @@ void renderFunc() {
     if (CmdlParser->normal_file != nullptr) {
         imgNormal.SaveTGA(CmdlParser->normal_file);
     }
+
+    if (CmdlParser->stats)
+        RayTracingStats::PrintStatistics();
 }
 
 int main(int argc, char* argv[]) {

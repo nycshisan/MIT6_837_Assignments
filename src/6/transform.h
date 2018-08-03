@@ -21,6 +21,8 @@ public:
     void insertIntoGrid(Grid *g, Matrix *m) override;
 
     static BoundingBox TransformBoundingBox(const Object3D &object, const Matrix &m);
+
+    ~Transform() override { delete _object; }
 };
 
 #endif //ASSIGNMENTS_TRANSFORM_H

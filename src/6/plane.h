@@ -17,6 +17,8 @@ public:
 
     bool intersect(const Ray &r, Hit &h, float tmin) override;
     void paint() override;
+
+    void insertIntoGrid(Grid *g, Matrix *m) override;
 };
 
 #endif //ASSIGNMENTS_PLANE_H

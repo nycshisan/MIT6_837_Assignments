@@ -12,6 +12,7 @@
 #include "rayTree.h"
 #include "hsl.h"
 #include "boundingbox.h"
+#include "raytracing_stats.h"
 
 static float _err = 1e-5f;
 constexpr int Grid::SchemaColorNumber;
@@ -32,6 +33,7 @@ Grid::Grid(const std::shared_ptr<BoundingBox> &bb, int nx, int ny, int nz) {
             }
         }
     }
+
     _nx = nx; _ny = ny; _nz = nz;
 
     _bbMin = _bb->getMin(); _bbMax = _bb->getMax();
@@ -53,6 +55,19 @@ void Grid::getN(int &nx, int &ny, int &nz) {
 }
 
 bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
+    RayTracingStats::IncrementNumIntersections();
+
+    h = Hit();
+
+    if (!visualizeGrid) {
+        // clear the marks of the objects
+        for (int i = 0; i < _nx; ++i)
+            for (int j = 0; j < _ny; ++j)
+                for (int k = 0; k < _nz; ++k)
+                    for (auto *p: cells[i][j][k])
+                        p->markedInGrid = false;
+    }
+
     MarchingInfo mi;
     _initializeRayMarch(mi, r, tmin);
 
@@ -60,33 +75,78 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
         // hit the bounding box
         mi.hit = false;
         bool firstHit = false;
-        float tHit = 0.f;
-        Vec3f nHit;
-        int nObjects = 0;
 
         while (mi.index[0] >= 0 && mi.index[0] < _nx &&
                mi.index[1] >= 0 && mi.index[1] < _ny &&
                mi.index[2] >= 0 && mi.index[2] < _nz) {
-            if (!cells[mi.index[0]][mi.index[1]][mi.index[2]].empty()) {
+            auto &cell = cells[mi.index[0]][mi.index[1]][mi.index[2]];
+            if (!cell.empty()) {
                 // hit an opaque cell
-                mi.hit = true;
-                if (!firstHit) {
-                    tHit = mi.tmin;
-                    nHit = mi.normal_to_cell;
-                    nObjects = static_cast<int>(cells[mi.index[0]][mi.index[1]][mi.index[2]].size());
-                    firstHit = true;
+                if (visualizeGrid) {
+                    // get the hit of grid
+                    mi.hit = true;
+                    if (!firstHit) {
+                        auto nHit = mi.normal_to_cell;
+                        auto nObjects = static_cast<int>(cells[mi.index[0]][mi.index[1]][mi.index[2]].size());
+                        nHit.Negate();
+                        h.set(mi.tmin, _getCellMaterial(std::min(nObjects, SchemaColorNumber) - 1), nHit, r, ObjectType::GridObject);
+                        firstHit = true;
+                    }
+                } else {
+                    // get the hit of object
+                    float t_next = std::min({ mi.t_next[0], mi.t_next[1], mi.t_next[2] });
+                    Hit closestHit;
+                    bool hitInCell = false;
+                    for (auto *object: cell) {
+                        if (!object->markedInGrid) {
+                            Hit localHit;
+                            if (object->intersect(r, localHit, tmin)) {
+                                if (localHit.getT() < t_next + _err) {
+                                    // the hit happens in this cell
+                                    hitInCell = true;
+                                    object->markedInGrid = true;
+                                    if (localHit.getT() < closestHit.getT()) {
+                                        closestHit = localHit;
+                                    }
+                                }
+                            } else {
+                                // no hit forever
+                                object->markedInGrid = true;
+                            }
+                        }
+                    }
+                    if (hitInCell) {
+                        // no need to march deeper inner
+                        h = closestHit;
+                        mi.hit = true;
+                        break;
+                    }
                 }
             }
             _nextCell(mi);
         }
+    }
 
-        if (mi.hit) {
-            nHit.Negate();
-            h.set(tHit, _getCellMaterial(std::min(nObjects, SchemaColorNumber) - 1), nHit, r, ObjectType::GridObject);
-            return true;
+    // intersect with infinite objects
+    bool intersectWithInfiniteObjects = false;
+    if (!visualizeGrid) {
+        Hit infiniteObjectHit;
+        for (auto &object: _infiniteObjects) {
+            Hit localHit;
+            if (object->intersect(r, localHit, tmin)) {
+                if (localHit.getT() < infiniteObjectHit.getT()) {
+                    intersectWithInfiniteObjects = true;
+                    infiniteObjectHit = localHit;
+                }
+            }
+        }
+
+        if (infiniteObjectHit.getT() < h.getT()) {
+            h = infiniteObjectHit;
         }
     }
-    return false;
+
+    return mi.hit || intersectWithInfiniteObjects;
 }
 
 void Grid::paint() {
@@ -142,7 +202,6 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
     const auto &startPoint = r.pointAtParameter(tmin);
 
     Vec3f hitPoint;
-    bool inBB = false;
     // store the entered face
     int enteredFaceAxis = -1, enteredFacePositive = 0;
 
@@ -151,8 +210,8 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
         startPoint.z() > _bbMin.z() && startPoint.z() < _bbMax.z()) {
         // inside the box
         mi.hit = true;
-        inBB = true;
         hitPoint = startPoint;
+        mi.tmin = tmin;
     } else {
         // outside the box
         // construct the facets
@@ -223,7 +282,11 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
     for (int i = 0; i < 3; ++i) {
         int nextIndex = mi.index[i] + (mi.sign[i] + 1) / 2;
         float nextPos = _bbMin[i] + nextIndex * _step[i];
-        mi.t_next[i] = (nextPos - r.getOrigin()[i]) / r.getDirection()[i];
+        if (r.getDirection()[i] == 0.f) {
+            mi.t_next[i] = INFINITY;
+        } else {
+            mi.t_next[i] = (nextPos - r.getOrigin()[i]) / r.getDirection()[i];
+        }
     }
 
 
@@ -268,6 +331,8 @@ void Grid::_addEnteredCell(int i, int j, int k, int index, int positive) {
 }
 
 void Grid::_nextCell(MarchingInfo &mi) {
+    RayTracingStats::IncrementNumGridCellsTraversed();
+
     int smallestIndex = -1;
     float smallestT = std::numeric_limits<float>::max();
     for (int m = 0; m < 3; ++m) {

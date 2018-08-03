@@ -8,6 +8,9 @@
 
 #include "hit.h"
 #include "material.h"
+#include "grid.h"
+#include "transform.h"
+#include "raytracing_stats.h"
 
 static float _err = 1e-5f;
 
@@ -29,6 +32,8 @@ Plane::Plane(const Vec3f &v0, const Vec3f &v1, const Vec3f &v2, Material *m) {
 }
 
 bool Plane::intersect(const Ray &r, Hit &h, float tmin) {
+    RayTracingStats::IncrementNumIntersections();
+
     Hit hit;
     auto nRd = _normal.Dot3(r.getDirection());
     if (std::fabsf(nRd) < _err) {
@@ -89,4 +94,14 @@ void Plane::paint() {
     b4.Get(x, y, z);
     glVertex3f(x, y, z);
     glEnd();
+}
+
+void Plane::insertIntoGrid(Grid *g, Matrix *m) {
+    auto *copy = new Plane(*this);
+    if (m == nullptr) {
+        g->addInfiniteObject(std::shared_ptr<Plane>(copy));
+    } else {
+        auto transform = std::make_shared<Transform>(*m, copy);
+        g->addInfiniteObject(transform);
+    }
 }

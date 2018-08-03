@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "rayTree.h"
+#include "raytracing_stats.h"
 
 static float _err = 1e-5f;
 
@@ -26,6 +27,7 @@ RayTracer::RayTracer(const std::shared_ptr<SceneParser> &scParser, const shared_
     if (_cmdlParser->grid_nx > 0 && _cmdlParser->grid_ny > 0 && _cmdlParser->grid_nz > 0) {
         _grid = std::make_shared<Grid>(_group->getBoundingBox(), _cmdlParser->grid_nx, _cmdlParser->grid_ny, _cmdlParser->grid_nz);
         _group->insertIntoGrid(_grid.get(), nullptr);
+        _grid->visualizeGrid = _cmdlParser->visualize_grid;
     }
 }
 
@@ -37,14 +39,10 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
     if (weight < _cmdlParser->cutoff_weight)
         return Vec3f(0.f, 0.f, 0.f);
 
+    RayTracingStats::IncrementNumNonShadowRays();
+
     Vec3f color;
-    Object3D *scene;
-    if (_cmdlParser->visualize_grid) {
-        scene = _grid.get();
-    } else {
-        scene = _group;
-    }
-    if (scene->intersect(ray, hit, tmin)) {
+    if (_castRay(ray, hit, tmin)) {
         color = Vec3f(0.f, 0.f, 0.f);
 
         auto norm = hit.getNormal();
@@ -76,9 +74,10 @@ Vec3f RayTracer::traceRay(Ray &ray, float tmin, int bounces, float weight, float
 
             // handle shadows
             if (_cmdlParser->cast_shadow) {
+                RayTracingStats::IncrementNumShadowRays();
                 Ray shadowRay(intersection, dirToLight);
                 Hit shadowHit;
-                if (scene->intersect(shadowRay, shadowHit, _err) && shadowHit.getT() < distToLight) {
+                if (_castRay(shadowRay, shadowHit, _err * 100.f) && shadowHit.getT() < distToLight) {
                     RayTree::AddShadowSegment(shadowRay, 0, shadowHit.getT());
                     continue;
                 } else {
@@ -146,4 +145,14 @@ bool RayTracer::_transmittedDirection(const Vec3f &normal, const Vec3f &incoming
     transmittedDir = (eta * (normal.Dot3(i)) - sqrtf(cosThetaTSquare)) * normal - eta * i;
     transmittedDir.Normalize();
     return true;
+}
+
+bool RayTracer::_castRay(Ray &ray, Hit &hit, float tmin) const {
+    if (_cmdlParser->grid_nx > 0 && _cmdlParser->grid_ny > 0 && _cmdlParser->grid_nz > 0) {
+        // with grid
+        return _grid->intersect(ray, hit, tmin);
+    } else {
+        // no grid
+        return _group->intersect(ray, hit, tmin);
+    }
 }

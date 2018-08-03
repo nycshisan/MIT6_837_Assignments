@@ -22,6 +22,9 @@ public:
 };
 
 class Grid : public Object3D {
+public:
+    typedef std::vector<Object3D*> Cell;
+private:
     static PhongMaterial GridMaterial;
 
     int _nx, _ny, _nz;
@@ -47,8 +50,12 @@ class Grid : public Object3D {
     int _crtColorIndex = 0;
     PhongMaterial _materialSchema[SchemaColorNumber];
 
+    std::vector<std::shared_ptr<Object3D>> _infiniteObjects;
+
 public:
-    std::vector<std::vector<std::vector<std::vector<Object3D*>>>> cells;
+    bool visualizeGrid = false;
+
+    std::vector<std::vector<std::vector<Cell>>> cells;
 
     Grid(const std::shared_ptr<BoundingBox> &bb, int nx, int ny, int nz);
     bool intersect(const Ray &r, Hit &h, float tmin) override;
@@ -61,6 +68,8 @@ public:
     void getGridCellIndex(const Vec3f &p, int index[3]);
 
     void refreshColorSchema() { _crtColorIndex = 0; }
+
+    void addInfiniteObject(const std::shared_ptr<Object3D> &object) { _infiniteObjects.emplace_back(object); }
 };
 
 #endif //ASSIGNMENTS_GRID_H

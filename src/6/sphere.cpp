@@ -9,6 +9,7 @@
 #include "grid.h"
 #include "material.h"
 #include "boundingbox.h"
+#include "raytracing_stats.h"
 
 static float _err = 1e-5f;
 
@@ -25,6 +26,8 @@ Sphere::Sphere(const Vec3f &center, float radius, Material *material) {
 }
 
 bool Sphere::intersect(const Ray &r, Hit &h, float tmin) {
+    RayTracingStats::IncrementNumIntersections();
+
     const auto &origin = r.getOrigin();
     auto dOrigin = origin - _center;
     auto squareLenOrigin = dOrigin.Dot3(dOrigin);

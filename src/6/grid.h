@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <array>
+#include <set>
 
 #include "object3d.h"
 #include "material.h"

@@ -58,15 +58,7 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
     RayTracingStats::IncrementNumIntersections();
 
     h = Hit();
-
-    if (!visualizeGrid) {
-        // clear the marks of the objects
-        for (int i = 0; i < _nx; ++i)
-            for (int j = 0; j < _ny; ++j)
-                for (int k = 0; k < _nz; ++k)
-                    for (auto *p: cells[i][j][k])
-                        p->markedInGrid = false;
-    }
+    std::set<Object3D*> visitedObjectsSet;
 
     MarchingInfo mi;
     _initializeRayMarch(mi, r, tmin);
@@ -94,24 +86,24 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
                     }
                 } else {
                     // get the hit of object
-                    float t_next = std::min({ mi.t_next[0], mi.t_next[1], mi.t_next[2] });
+                    auto t_next = std::min<float>({ mi.t_next[0], mi.t_next[1], mi.t_next[2] });
                     Hit closestHit;
                     bool hitInCell = false;
                     for (auto *object: cell) {
-                        if (!object->markedInGrid) {
+                        if (visitedObjectsSet.count(object) == 0) {
                             Hit localHit;
                             if (object->intersect(r, localHit, tmin)) {
                                 if (localHit.getT() < t_next + _err) {
                                     // the hit happens in this cell
                                     hitInCell = true;
-                                    object->markedInGrid = true;
+                                    visitedObjectsSet.emplace(object);
                                     if (localHit.getT() < closestHit.getT()) {
                                         closestHit = localHit;
                                     }
                                 }
                             } else {
                                 // no hit forever
-                                object->markedInGrid = true;
+                                visitedObjectsSet.emplace(object);
                             }
                         }
                     }
@@ -130,19 +122,14 @@ bool Grid::intersect(const Ray &r, Hit &h, float tmin) {
     // intersect with infinite objects
     bool intersectWithInfiniteObjects = false;
     if (!visualizeGrid) {
-        Hit infiniteObjectHit;
         for (auto &object: _infiniteObjects) {
-            Hit localHit;
-            if (object->intersect(r, localHit, tmin)) {
-                if (localHit.getT() < infiniteObjectHit.getT()) {
+            Hit infiniteObjectHit;
+            if (object->intersect(r, infiniteObjectHit, tmin)) {
+                if (infiniteObjectHit.getT() < h.getT()) {
                     intersectWithInfiniteObjects = true;
-                    infiniteObjectHit = localHit;
+                    h = infiniteObjectHit;
                 }
             }
-        }
-
-        if (infiniteObjectHit.getT() < h.getT()) {
-            h = infiniteObjectHit;
         }
     }
 
@@ -289,10 +276,8 @@ void Grid::_initializeRayMarch(MarchingInfo &mi, const Ray &r, float tmin) {
         }
     }
 
-
-
     // add help faces
-    if (mi.hit)
+    if (visualizeGrid && mi.hit)
         _addEnteredCell(mi.index[0], mi.index[1], mi.index[2], enteredFaceAxis, enteredFacePositive);
 }
 
@@ -349,7 +334,8 @@ void Grid::_nextCell(MarchingInfo &mi) {
     mi.normal_to_cell = normals[smallestIndex] * mi.sign[smallestIndex];
     int enteredFacePositive = (1 - mi.sign[smallestIndex]) / 2;
 
-    _addEnteredCell(mi.index[0], mi.index[1], mi.index[2], smallestIndex, enteredFacePositive);
+    if (visualizeGrid)
+        _addEnteredCell(mi.index[0], mi.index[1], mi.index[2], smallestIndex, enteredFacePositive);
 }
 
 PhongMaterial* Grid::_getCellMaterial(int index) const {

@@ -30,8 +30,6 @@ protected:
     ObjectType _type;
 
 public:
-    bool markedInGrid = false;
-
     virtual bool intersect(const Ray &r, Hit &h, float tmin) = 0;
     virtual void paint() = 0;
 

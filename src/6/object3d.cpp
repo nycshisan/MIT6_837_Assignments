@@ -10,6 +10,8 @@
 
 void Object3D::insertIntoGrid(Grid *g, Matrix *m) {
     if (m != nullptr && _bb != nullptr) {
+        // flatten the transform
+        auto *transform = new Transform(*m, this);
         // only handles transformations && discards planes etc.
         auto transformedBB = Transform::TransformBoundingBox(*this, *m);
         int iMin[3], iMax[3];
@@ -18,8 +20,6 @@ void Object3D::insertIntoGrid(Grid *g, Matrix *m) {
         for (int i = iMin[0]; i <= iMax[0]; ++i) {
             for (int j = iMin[1]; j <= iMax[1]; ++j) {
                 for (int k = iMin[2]; k <= iMax[2]; ++k) {
-                    // flatten the transform
-                    auto *transform = new Transform(*m, this);
                     g->cells[i][j][k].emplace_back(transform);
                 }
             }

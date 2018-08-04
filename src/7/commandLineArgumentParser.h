@@ -23,6 +23,14 @@ public:
     bool visualize_grid = false;
     int grid_nx = 0, grid_ny = 0, grid_nz = 0;
     bool stats = false;
+    int samples_num = 0;
+    char *sampler_strategy = nullptr;
+    char *samples_file = nullptr;
+    int samples_zoom = 0;
+    char *filter_file = nullptr;
+    int filter_zoom = 0;
+    char *filter_strategy = nullptr;
+    float filter_argument = 0;
 
     void parse(int argc, char *argv[]);
 };

@@ -22,6 +22,7 @@ Group::Group(int nObjects) {
 
 bool Group::intersect(const Ray &r, Hit &h, float tmin) {
     bool success = false;
+    h = Hit();
     for (auto &obj: _objs) {
         Hit currentHit;
         if (obj->intersect(r, currentHit, tmin)) {

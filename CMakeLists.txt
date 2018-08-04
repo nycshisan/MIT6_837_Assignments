@@ -204,8 +204,8 @@ add_executable(A7
         src/7/perlin_noise.cpp
         src/7/raytracing_stats.cpp
         src/7/film.cpp
-        src/7/sample.cpp
-        src/7/filter.cpp)
+        src/7/filter.cpp
+        src/7/sampler.cpp)
 
 set_target_properties(A7 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A7"

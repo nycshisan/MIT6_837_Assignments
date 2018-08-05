@@ -154,6 +154,9 @@ public:
     d0 = data[0];
     d1 = data[1];
     d2 = data[2]; }
+  const float *GetData() const {
+    return data;
+  }
   float operator[](int i) const { 
     assert (i >= 0 && i < 3); 
     return data[i]; }
@@ -363,6 +366,8 @@ public:
 		     data[2] * data[2] +
 		     data[3] * data[3] );
     return l; }
+
+    Vec3f xyz() const { return Vec3f(data[0], data[1], data[2]); }
 
   // MODIFIERS
   void Set(float d0, float d1, float d2, float d3) {

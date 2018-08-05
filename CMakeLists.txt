@@ -218,11 +218,18 @@ target_compile_options(A7 PUBLIC "-Wno-deprecated-declarations")
 ### A8 ###
 
 add_executable(A8
-        src/8/main.cpp)
+        src/8/main.cpp
+        src/8/glCanvas.cpp
+        src/8/matrix.cpp
+        src/8/spline_parser.cpp
+        src/8/triangle_mesh.cpp
+        src/8/curve.cpp
+        src/8/surface.cpp
+        src/8/spline.cpp)
 
 set_target_properties(A8 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A8"
-        OUTPUT_NAME "raytracer")
+        OUTPUT_NAME "curve_editor")
 
 target_link_libraries(A8 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
 

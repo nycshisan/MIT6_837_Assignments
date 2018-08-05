@@ -1,6 +1,6 @@
 // Included files for OpenGL Rendering
-#include <GL/gl.h>
-#include <GL/glut.h>
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
 
 #include "glCanvas.h"
 #include "arg_parser.h"
@@ -29,6 +29,9 @@ void GLCanvas::initialize(ArgParser *_args, SplineParser *_splines) {
   args = _args;
   splines = _splines;
 
+  int argc = 0;
+  char **argv = nullptr;
+  glutInit(&argc, argv);
   // Set window parameters
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGB);
   glutInitWindowSize(width,height);

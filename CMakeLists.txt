@@ -238,11 +238,19 @@ target_compile_options(A8 PUBLIC "-Wno-deprecated-declarations")
 ### A9 ###
 
 add_executable(A9
-        src/9/main.cpp)
+        src/9/main.cpp
+        src/9/glCanvas.cpp
+        src/9/matrix.cpp
+        src/9/parser.cpp
+        src/9/particle.cpp
+        src/9/system.cpp
+        src/9/generator.cpp
+        src/9/integrator.cpp
+        src/9/forcefield.cpp)
 
 set_target_properties(A9 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A9"
-        OUTPUT_NAME "raytracer")
+        OUTPUT_NAME "particle_system")
 
 target_link_libraries(A9 ${OPENGL_gl_LIBRARY} ${GLUT_LIBRARIES})
 

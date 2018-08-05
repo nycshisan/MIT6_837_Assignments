@@ -1,6 +1,6 @@
 // Included files for OpenGL Rendering
-#include <GL/gl.h>
-#include <GL/glut.h>
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
 
 #include "glCanvas.h"
 #include "parser.h"

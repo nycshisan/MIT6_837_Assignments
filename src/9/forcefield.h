@@ -38,7 +38,7 @@ class RadialForceField : public ForceField {
 public:
     explicit RadialForceField(float magnitude) { _magnitude = magnitude; }
 
-    Vec3f getAcceleration(const Vec3f &position, float mass, float t) const override { return position * (1.f / mass) * _magnitude; };
+    Vec3f getAcceleration(const Vec3f &position, float mass, float t) const override;;
 };
 
 class VerticalForceField : public ForceField {
@@ -47,10 +47,7 @@ class VerticalForceField : public ForceField {
 public:
     explicit VerticalForceField(float magnitude) { _magnitude = magnitude; }
 
-    Vec3f getAcceleration(const Vec3f &position, float mass, float t) const override {
-        Vec3f force = Vec3f(0.f, -position.y(), 0.f) * _magnitude;
-        return force * (1.f / mass);
-    };
+    Vec3f getAcceleration(const Vec3f &position, float mass, float t) const override;;
 };
 
 class WindForceField : public ForceField {
@@ -59,7 +56,7 @@ class WindForceField : public ForceField {
 public:
     explicit WindForceField(float magnitude) { _magnitude = magnitude; }
 
-    Vec3f getAcceleration(const Vec3f &position, float mass, float t) const override { assert(0);  return Vec3f(); };
+    Vec3f getAcceleration(const Vec3f &position, float mass, float t) const override;;
 };
 
 #endif //ASSIGNMENTS_FORCEFIELD_H

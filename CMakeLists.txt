@@ -246,7 +246,8 @@ add_executable(A9
         src/9/system.cpp
         src/9/generator.cpp
         src/9/integrator.cpp
-        src/9/forcefield.cpp)
+        src/9/forcefield.cpp
+        src/9/perlin_noise.cpp)
 
 set_target_properties(A9 PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/A9"

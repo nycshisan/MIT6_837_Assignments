@@ -20,7 +20,6 @@ protected:
     float _mass = 0.f, _massRandomness = 0.f;
 
     Random _rg;
-    float _getRandomComponent(float randomness);
 
 public:
     // initialization
@@ -65,7 +64,7 @@ public:
 
 class RingGenerator : public Generator {
     Vec3f _velocity;
-    float _positionRandomness, _velocityRandomness, _radiusVelocity = 0.3f, _radiusRandomness = 0.2f;
+    float _positionRandomness, _velocityRandomness, _radiusVelocity = 0.1f, _radiusRandomness = 0.2f;
 
 public:
     RingGenerator(float position_randomness, const Vec3f &velocity, float velocity_randomness) {

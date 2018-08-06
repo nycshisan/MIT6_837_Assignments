@@ -18,8 +18,8 @@ Vec3f VerticalForceField::getAcceleration(const Vec3f &position, float mass, flo
 
 Vec3f WindForceField::getAcceleration(const Vec3f &position, float mass, float t) const {
     // time-based varying
-    auto nx = float(PerlinNoise::noise(t, position.y(), position.z()) * 1.5);
-    auto ny = float(PerlinNoise::noise(position.x(), t, position.z()) + 0.3);
+    auto nx = float(PerlinNoise::noise(t, position.y(), position.z()) * 2.0);
+    auto ny = float(PerlinNoise::noise(position.x(), t, position.z()) + 0.15);
     auto nz = float(PerlinNoise::noise(position.x(), position.y(), t));
     auto force = Vec3f(nx, ny, nz) * _magnitude;
     return force * (1.f / mass);

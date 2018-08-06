@@ -6,10 +6,6 @@
 
 #include <OpenGL/gl.h>
 
-float Generator::_getRandomComponent(float randomness) {
-    return randomness * float(_rg.next() - 0.5) * 2.f;
-}
-
 int Generator::numNewParticles(float current_time, float dt) const {
     return int(ceilf(dt * _desiredNumParticles / _lifespan));
 }
